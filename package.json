@@ -1,0 +1,111 @@
+{
+  "name": "@exah/react-get-data-hoc",
+  "version": "0.0.0",
+  "description": "Simple React HOC for getting async data",
+  "author": "John Grishin <hi@johngrish.in>",
+  "license": "MIT",
+  "repository": "exah/react-get-data-hoc",
+  "sideEffects": false,
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "files": [
+    "./esm",
+    "./cjs"
+  ],
+  "tags": [
+    "react",
+    "tree",
+    "ssr",
+    "data",
+    "prefetch"
+  ],
+  "scripts": {
+    "build": "run-s build:*",
+    "build:esm": "cross-env NODE_ENV=production babel src -d esm",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=modules babel src -d cjs",
+    "build:docs": "documentation build -c ./.documentation.yml src/** -f md -o docs/api.md",
+    "prebuild": "npm run cleanup",
+    "watch": "run-p \"build:* -- -w\" \"test:unit -- -w\"",
+    "prewatch": "npm run cleanup",
+    "test": "run-s test:*",
+    "test:lint": "eslint src test",
+    "test:unit": "cross-env BABEL_ENV=modules ava test",
+    "deploy": "np --no-cleanup",
+    "cleanup": "rimraf cjs esm",
+    "version": "auto-changelog -p && git add CHANGELOG.md",
+    "preversion": "npm run build",
+    "precommit": "lint-staged",
+    "prepush": "npm test"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "lint-staged": {
+    "./src/**/*.js": "eslint",
+    "./test/**/*.js": "eslint"
+  },
+  "eslintConfig": {
+    "extends": [
+      "standard",
+      "standard-react"
+    ],
+    "parser": "babel-eslint",
+    "rules": {
+      "no-shadow": 2
+    }
+  },
+  "auto-changelog": {
+    "commitLimit": 10,
+    "template": ".changelog.hbs"
+  },
+  "ava": {
+    "babel": "inherit",
+    "verbose": true,
+    "require": [
+      "babel-register"
+    ]
+  },
+  "peerDependencies": {
+    "prop-types": "^15.0.0",
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "devDependencies": {
+    "auto-changelog": "^1.7.1",
+    "ava": "^0.25.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "6.26.3",
+    "babel-eslint": "^8.2.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-register": "^6.26.0",
+    "cross-env": "5.1.6",
+    "documentation": "^8.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-config-standard-react": "^6.0.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "flow-bin": "^0.73.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.1.3",
+    "np": "3.0.4",
+    "npm-run-all": "^4.1.3",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "create-react-context": "^0.2.2",
+    "react-tree-walker": "^4.1.0",
+    "recompose": "^0.27.1"
+  }
+}

@@ -1,0 +1,14 @@
+[ignore]
+.*/node_modules/.*
+.*/cjs/.*
+.*/esm/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]

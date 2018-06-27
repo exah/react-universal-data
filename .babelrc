@@ -1,0 +1,19 @@
+{
+  "env": {
+    "modules": {
+      "plugins": [
+        "transform-es2015-modules-commonjs"
+      ]
+    }
+  },
+  "presets": [
+    "flow",
+    [ "env", { "modules": false } ]
+  ],
+  "plugins": [
+    "transform-react-jsx",
+    "transform-class-properties",
+    [ "transform-runtime", { "helpers": true, "polyfill": false } ],
+    [ "transform-object-rest-spread", { "useBuiltIns": true } ]
+  ]
+}
