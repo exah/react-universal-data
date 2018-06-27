@@ -5,7 +5,7 @@ import { isClient, isServer } from './constants'
 import { DataConsumer } from './context'
 import { defaultDataStore } from './data-store'
 
-const alwaysResolve = () => Promise.resolve()
+const defaultGetData = () => Promise.resolve()
 
 const defaultShouldDataUpdate = (prev, next) => {
   if (prev.match && prev.location) {
@@ -27,12 +27,13 @@ const defaultMergeProps = ({ dataStore, ...ownProps }, stateProps) => ({
 })
 
 const withData = (
-  optGetData = alwaysResolve,
+  userGetData,
   shouldDataUpdate = defaultShouldDataUpdate,
   mergeProps = defaultMergeProps
 ) => (BaseComponent) => {
   let id = null
 
+  const optGetData = userGetData || BaseComponent.getData || defaultGetData
   const getData = (context) => {
     const promise = optGetData({ isClient, isServer, ...context })
 
@@ -55,19 +56,6 @@ const withData = (
         getById: PropTypes.func.isRequired
       })
     }
-    getInitialData = (context) => getData({
-      ...context,
-      ...this.props
-    })
-    handleRequest = (promise) => {
-      this.setState({ isLoading: true })
-
-      promise
-        .then((data) => this.setState({ isLoading: false, data }))
-        .catch((error) => this.setState({ isLoading: false, error }))
-
-      return promise
-    }
     constructor (props) {
       super(props)
 
@@ -80,6 +68,19 @@ const withData = (
         error: null,
         data: props.dataStore.getById(id)
       }
+    }
+    getInitialData = (context) => getData({
+      ...context,
+      ...this.props
+    })
+    handleRequest = (promise) => {
+      this.setState({ isLoading: true })
+
+      promise
+        .then((data) => this.setState({ isLoading: false, data }))
+        .catch((error) => this.setState({ isLoading: false, error }))
+
+      return promise
     }
     componentDidMount () {
       if (this.props.dataStore.getById(id) == null) {

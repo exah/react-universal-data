@@ -7,8 +7,8 @@ const createDataStore = (initialData) => {
       pointer = 0
       store = value || {}
     },
-    save: (id, result) => {
-      store[id] = result
+    save: (id, value) => {
+      store[id] = value
     },
     nextId: () => {
       pointer += 1
