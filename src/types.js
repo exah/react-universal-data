@@ -19,14 +19,17 @@ type DataCompStateType = {
   data: any
 }
 
+type GetDataFnType = (context: Object) => Promise<Object | boolean>
+
 type DataCompChildType = {
-  getData?: (any) => Promise<any>
+  getData?: GetDataFnType
 } & $Subtype<ComponentType<any>>
 
 export type {
-  DataStoreType,
   ComponentType,
   ElementType,
+  GetDataFnType,
+  DataStoreType,
   DataCompStateType,
   DataCompChildType
 }

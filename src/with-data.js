@@ -1,6 +1,7 @@
 // @flow
 
 import type {
+  GetDataFnType,
   DataStoreType,
   DataCompChildType,
   DataCompStateType
@@ -18,7 +19,7 @@ import {
   INITIAL_ID
 } from './constants'
 
-const defaultGetData = () => Promise.resolve()
+const defaultGetData: GetDataFnType = () => Promise.resolve(false)
 
 const defaultShouldDataUpdate = (prev, next): boolean => {
   if (prev.match && prev.location) {
@@ -40,12 +41,12 @@ const defaultMergeProps = ({ dataStore, ...ownProps }, stateProps): Object => ({
 })
 
 const withData = (
-  optGetData: Function,
+  optGetData: GetDataFnType,
   shouldDataUpdate: Function = defaultShouldDataUpdate,
   mergeProps: Function = defaultMergeProps
 ) => (BaseComponent: DataCompChildType) => {
-  let unmountedProps = {}
   let id = INITIAL_ID
+  let unmountedProps = {}
 
   const getDataPromise = optGetData || BaseComponent.getData || defaultGetData
 
