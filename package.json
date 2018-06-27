@@ -1,7 +1,7 @@
 {
   "name": "react-get-app-data",
   "version": "0.0.0",
-  "description": "Simple React HOC for getting async data",
+  "description": "Simple React HOC for getting async data + SSR",
   "author": "John Grishin <hi@johngrish.in>",
   "license": "MIT",
   "repository": "exah/react-get-app-data",
