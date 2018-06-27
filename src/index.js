@@ -1,6 +1,6 @@
 export {
   createDataStore,
-  rehydrateData
+  hydrateData
 } from './data-store'
 
 export {

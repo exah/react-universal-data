@@ -25,10 +25,10 @@ const createDataStore = (initialData?: Object): DataStoreType => {
 }
 
 const defaultDataStore = createDataStore()
-const rehydrateData = (data?: Object): void => defaultDataStore.init(data)
+const hydrateData = (data?: Object): void => defaultDataStore.init(data)
 
 export {
   createDataStore,
-  rehydrateData,
+  hydrateData,
   defaultDataStore
 }
