@@ -28,8 +28,9 @@
     "watch": "run-p \"build:* -- -w\" \"test:unit -- -w\"",
     "prewatch": "npm run cleanup",
     "test": "run-s test:*",
-    "test:lint": "eslint src test",
     "test:unit": "cross-env BABEL_ENV=modules ava test",
+    "test:lint": "eslint src test",
+    "test:types": "flow check",
     "deploy": "np --no-cleanup",
     "cleanup": "rimraf cjs esm",
     "version": "auto-changelog -p && git add CHANGELOG.md",
@@ -45,11 +46,15 @@
     "./test/**/*.js": "eslint"
   },
   "eslintConfig": {
+    "parser": "babel-eslint",
     "extends": [
       "standard",
-      "standard-react"
+      "standard-react",
+      "plugin:flowtype/recommended"
     ],
-    "parser": "babel-eslint",
+    "plugins": [
+      "flowtype"
+    ],
     "rules": {
       "no-shadow": 2
     }
@@ -88,6 +93,7 @@
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-config-standard-react": "^6.0.0",
+    "eslint-plugin-flowtype": "^2.49.3",
     "eslint-plugin-import": "^2.12.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",

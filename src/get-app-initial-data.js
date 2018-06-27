@@ -1,7 +1,18 @@
+// @flow
+
 import reactTreeWalker from 'react-tree-walker'
 import { defaultDataStore } from './data-store'
 
-const getAppInitialData = (tree, context, dataStore = defaultDataStore) => {
+import type {
+  ElementType,
+  DataStoreType
+} from './types'
+
+const getAppInitialData = (
+  tree: ElementType,
+  context: Object,
+  dataStore: DataStoreType = defaultDataStore
+): Promise<any> => {
   dataStore.init()
 
   return new Promise((resolve, reject) =>

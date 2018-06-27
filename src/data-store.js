@@ -1,4 +1,8 @@
-const createDataStore = (initialData) => {
+// @flow
+
+import type { DataStoreType } from './types'
+
+const createDataStore = (initialData?: Object): DataStoreType => {
   let store = initialData || {}
   let pointer = 0
 
@@ -14,13 +18,13 @@ const createDataStore = (initialData) => {
       pointer += 1
       return pointer
     },
-    getById: (id) => store[id],
+    getById: (id) => id != null ? store[id] : null,
     get: () => store
   }
 }
 
 const defaultDataStore = createDataStore()
-const rehydrateData = (data) => defaultDataStore.init(data)
+const rehydrateData = (data?: Object): void => defaultDataStore.init(data)
 
 export {
   createDataStore,

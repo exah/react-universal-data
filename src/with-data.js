@@ -1,9 +1,17 @@
+// @flow
+
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { shallowEqual, wrapDisplayName } from 'recompose'
 import { isClient, isServer } from './constants'
 import { DataConsumer } from './context'
 import { defaultDataStore } from './data-store'
+
+import type {
+  DataStoreType,
+  DataCompChildType,
+  DataCompStateType
+} from './types'
 
 const defaultGetData = () => Promise.resolve()
 
@@ -27,22 +35,22 @@ const defaultMergeProps = ({ dataStore, ...ownProps }, stateProps) => ({
 })
 
 const withData = (
-  userGetData,
-  shouldDataUpdate = defaultShouldDataUpdate,
-  mergeProps = defaultMergeProps
-) => (BaseComponent) => {
-  let id = null
+  optGetData: Function,
+  shouldDataUpdate: Function = defaultShouldDataUpdate,
+  mergeProps: Function = defaultMergeProps
+) => (BaseComponent: DataCompChildType) => {
+  let id = 0
 
-  const optGetData = userGetData || BaseComponent.getData || defaultGetData
+  const getDataPromise = optGetData || BaseComponent.getData || defaultGetData
   const getData = (context) => {
-    const promise = optGetData({ isClient, isServer, ...context })
+    const promise = getDataPromise({ isClient, isServer, ...context })
 
     promise.then((data) => context.dataStore.save(id, data))
 
     return promise
   }
 
-  class Data extends PureComponent {
+  class Data extends PureComponent<{ dataStore: DataStoreType }, DataCompStateType> {
     static displayName = wrapDisplayName(
       BaseComponent,
       'withData'
@@ -99,9 +107,9 @@ const withData = (
     }
   }
 
-  return (props) => (
+  return (props: Object) => (
     <DataConsumer>
-      {(dataStore) => <Data {...props} dataStore={dataStore} />}
+      {(dataStore: DataStoreType) => <Data {...props} dataStore={dataStore} />}
     </DataConsumer>
   )
 }
