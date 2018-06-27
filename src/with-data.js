@@ -1,17 +1,22 @@
 // @flow
 
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import { shallowEqual, wrapDisplayName } from 'recompose'
-import { isClient, isServer } from './constants'
-import { DataConsumer } from './context'
-import { defaultDataStore } from './data-store'
-
 import type {
   DataStoreType,
   DataCompChildType,
   DataCompStateType
 } from './types'
+
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
+import { shallowEqual, wrapDisplayName } from 'recompose'
+import { DataConsumer } from './context'
+import { defaultDataStore } from './data-store'
+
+import {
+  IS_CLIENT,
+  IS_SERVER,
+  INITIAL_ID
+} from './constants'
 
 const defaultGetData = () => Promise.resolve()
 
@@ -39,11 +44,16 @@ const withData = (
   shouldDataUpdate: Function = defaultShouldDataUpdate,
   mergeProps: Function = defaultMergeProps
 ) => (BaseComponent: DataCompChildType) => {
-  let id = 0
+  let id = INITIAL_ID
 
   const getDataPromise = optGetData || BaseComponent.getData || defaultGetData
+
   const getData = (context) => {
-    const promise = getDataPromise({ isClient, isServer, ...context })
+    const promise = getDataPromise({
+      isClient: IS_CLIENT,
+      isServer: IS_SERVER,
+      ...context
+    })
 
     promise.then((data) => context.dataStore.save(id, data))
 

@@ -1,7 +1,9 @@
-const isClient = typeof window !== 'undefined'
-const isServer = !isClient
+const IS_CLIENT = typeof window !== 'undefined'
+const IS_SERVER = !IS_CLIENT
+const INITIAL_ID = 0
 
 export {
-  isClient,
-  isServer
+  IS_CLIENT,
+  IS_SERVER,
+  INITIAL_ID
 }

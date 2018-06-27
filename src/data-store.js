@@ -1,14 +1,15 @@
 // @flow
 
 import type { DataStoreType } from './types'
+import { INITIAL_ID } from './constants'
 
 const createDataStore = (initialData?: Object): DataStoreType => {
   let store = initialData || {}
-  let pointer = 0
+  let pointer = INITIAL_ID
 
   return {
     init: (value) => {
-      pointer = 0
+      pointer = INITIAL_ID
       store = value || {}
     },
     save: (id, value) => {
