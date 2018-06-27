@@ -20,7 +20,7 @@ import {
 
 const defaultGetData = () => Promise.resolve()
 
-const defaultShouldDataUpdate = (prev, next) => {
+const defaultShouldDataUpdate = (prev, next): boolean => {
   if (prev.match && prev.location) {
     return !(
       shallowEqual(prev.match.params, next.match.params) &&
@@ -32,7 +32,7 @@ const defaultShouldDataUpdate = (prev, next) => {
   return false
 }
 
-const defaultMergeProps = ({ dataStore, ...ownProps }, stateProps) => ({
+const defaultMergeProps = ({ dataStore, ...ownProps }, stateProps): Object => ({
   ...ownProps,
   ...stateProps.data,
   isLoading: ownProps.isLoading || stateProps.isLoading,
@@ -44,6 +44,7 @@ const withData = (
   shouldDataUpdate: Function = defaultShouldDataUpdate,
   mergeProps: Function = defaultMergeProps
 ) => (BaseComponent: DataCompChildType) => {
+  let unmountedProps = {}
   let id = INITIAL_ID
 
   const getDataPromise = optGetData || BaseComponent.getData || defaultGetData
@@ -70,12 +71,17 @@ const withData = (
     }
     static propTypes = {
       dataStore: PropTypes.shape({
+        save: PropTypes.func.isRequired,
         nextId: PropTypes.func.isRequired,
         getById: PropTypes.func.isRequired
       })
     }
     constructor (props) {
       super(props)
+
+      if (id !== INITIAL_ID && shouldDataUpdate(unmountedProps, props)) {
+        id = INITIAL_ID
+      }
 
       if (!id) {
         id = props.dataStore.nextId()
@@ -109,6 +115,9 @@ const withData = (
       if (shouldDataUpdate(prevProps, this.props)) {
         this.handleRequest(getData(this.props))
       }
+    }
+    componentWillUnmount () {
+      unmountedProps = this.props
     }
     render () {
       return (
