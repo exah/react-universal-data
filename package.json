@@ -1,10 +1,10 @@
 {
-  "name": "@exah/react-get-data-hoc",
+  "name": "react-get-app-data",
   "version": "0.0.0",
   "description": "Simple React HOC for getting async data",
   "author": "John Grishin <hi@johngrish.in>",
   "license": "MIT",
-  "repository": "exah/react-get-data-hoc",
+  "repository": "exah/react-get-app-data",
   "sideEffects": false,
   "main": "cjs/index.js",
   "module": "esm/index.js",
