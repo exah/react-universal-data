@@ -1,6 +1,6 @@
 # 🗂 react-get-app-data
 
-> Simple React HOC for getting async data + SSR
+> Simple React HOC for getting intial and subsequent async data + SSR
 
 ## Install
 
@@ -13,51 +13,62 @@ $ yarn add react-get-app-data
 
 ### HOC
 
+
 ```js
 import 'isomorphic-fetch'
 import React from 'react'
+import ReactDOM from 'react-dom'
 import { withData } from 'react-get-app-data'
 
-const UserPage = ({ user = {} }) => (
-  <div>
-    Hello {user.name}!
-  </div>
-)
+const Page = ({ user = {} }) => <div>Hello {user.name}!</div>
 
-export default withData(() =>
+const PageWithData = withData(() =>
   fetch('https://jsonplaceholder.typicode.com/users/1')
-    .then((res) => res.json())
-    .then((user) => ({ user }))
-)(UserPage)
+    .then(res => res.json())
+    .then(user => ({ user }))
+)(Page)
+
+ReactDOM.render(<PageWithData />, document.getElementById('root'))
 ```
+
+[![Edit pp98jzr4y7](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/pp98jzr4y7)
 
 
 ### Static property
 
 ```js
-class UserPage extends React.Component {
+import 'isomorphic-fetch'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { withData } from 'react-get-app-data'
+
+class Page extends React.Component {
   static defaultProps = {
     user: {}
   }
-  static async getData () {
-    const user = await fetch('https://jsonplaceholder.typicode.com/users/1')
-      .then((res) => res.json())
+  static async getData() {
+    const user = await fetch(
+      'https://jsonplaceholder.typicode.com/users/1'
+    ).then(res => res.json())
 
     return {
       user
     }
   }
-  render () {
-    return (
-      <div>
-        Hello {user.name}!
-      </div>
-    )
+  render() {
+    const { user } = this.props
+
+    return <div>Hello {user.name}!</div>
   }
 }
 
-export default withData()(UserPage)
+const PageWithData = withData()(Page)
+
+ReactDOM.render(<PageWithData />, document.getElementById('root'))
 ```
+
+[![Edit ovxkz1ojj9](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ovxkz1ojj9)
+
 
 ### SSR
 
