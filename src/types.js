@@ -13,23 +13,44 @@ type DataStoreType = {
   get: () => Object
 }
 
-type DataCompStateType = {
+type State = {
   isLoading: boolean,
-  error: any,
+  error: Error | null,
   data: any
 }
 
-type GetDataFnType = (context: Object) => Promise<Object | boolean>
+type Props = $Shape<{
+  match: Object,
+  location: Object,
+  isLoading: boolean,
+  error: Error | null
+}>
 
-type DataCompChildType = {
-  getData?: GetDataFnType
+/**
+ * Function that returns Promise with props for `withData` wrapped component.
+ * First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
+ *
+ * @example
+ *
+ * ({ isClient, isServer, ...parentProps }) =>
+ *   Promise.resolve({ message: 'ok' })
+ */
+
+type GetDataFn = (context: Object) => Promise<Object | boolean>
+
+type WrappedComponentType = {
+  getData?: GetDataFn
 } & $Subtype<ComponentType<any>>
+
+type HOC = (WrappedComponentType) => ComponentType<any>
 
 export type {
   ComponentType,
   ElementType,
-  GetDataFnType,
+  GetDataFn,
   DataStoreType,
-  DataCompStateType,
-  DataCompChildType
+  HOC,
+  State,
+  Props,
+  WrappedComponentType
 }

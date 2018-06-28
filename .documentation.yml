@@ -1,2 +1,6 @@
 toc:
   - withData
+
+  - name: Types
+    children:
+      - GetDataFn

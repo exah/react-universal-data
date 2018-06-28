@@ -1,10 +1,12 @@
 // @flow
 
 import type {
-  GetDataFnType,
+  GetDataFn,
   DataStoreType,
-  DataCompChildType,
-  DataCompStateType
+  WrappedComponentType,
+  HOC,
+  Props,
+  State
 } from './types'
 
 import React, { PureComponent } from 'react'
@@ -19,7 +21,7 @@ import {
   INITIAL_ID
 } from './constants'
 
-const defaultGetData: GetDataFnType = () => Promise.resolve(false)
+const defaultGetData: GetDataFn = () => Promise.resolve(false)
 
 const defaultShouldDataUpdate = (prev, next): boolean => {
   if (prev.match && prev.location) {
@@ -33,24 +35,42 @@ const defaultShouldDataUpdate = (prev, next): boolean => {
   return false
 }
 
-const defaultMergeProps = ({ dataStore, ...ownProps }, stateProps): Object => ({
-  ...ownProps,
-  ...stateProps.data,
-  isLoading: ownProps.isLoading || stateProps.isLoading,
-  error: stateProps.error || ownProps.error || null
+const defaultMergeProps = ({ dataStore, ...props }, state): Object => ({
+  ...props,
+  ...state.data,
+  isLoading: props.isLoading || state.isLoading,
+  error: state.error || props.error || null
 })
 
+/**
+ * HOC for getting async data for both initial props and subsequent updates.
+ *
+ * @example
+ *
+ * import { withData } from 'react-get-app-data'
+ *
+ * const Page = ({ message }) => (
+ *   <div>
+ *     {message}
+ *   </div>
+ * )
+ *
+ * export default withData(() =>
+ *   Promise.resolve({ message: 'ok' })
+ * )(Page)
+ */
+
 const withData = (
-  optGetData: GetDataFnType,
-  shouldDataUpdate: Function = defaultShouldDataUpdate,
-  mergeProps: Function = defaultMergeProps
-) => (BaseComponent: DataCompChildType) => {
+  getData: GetDataFn,
+  shouldDataUpdate: (prev: Props, next: Props) => boolean = defaultShouldDataUpdate,
+  mergeProps: (props: Props, state: State) => Props = defaultMergeProps
+): HOC => (WrappedComponent: WrappedComponentType) => {
   let id = INITIAL_ID
   let unmountedProps = {}
 
-  const getDataPromise = optGetData || BaseComponent.getData || defaultGetData
+  const getDataPromise = getData || WrappedComponent.getData || defaultGetData
 
-  const getData = (context) => {
+  const getDataHandler = (context) => {
     const promise = getDataPromise({
       isClient: IS_CLIENT,
       isServer: IS_SERVER,
@@ -62,9 +82,9 @@ const withData = (
     return promise
   }
 
-  class Data extends PureComponent<{ dataStore: DataStoreType }, DataCompStateType> {
+  class Data extends PureComponent<any, any> {
     static displayName = wrapDisplayName(
-      BaseComponent,
+      WrappedComponent,
       'withData'
     )
     static defaultProps = {
@@ -94,8 +114,8 @@ const withData = (
         data: props.dataStore.getById(id)
       }
     }
-    getInitialData = (context) => getData({
-      ...context,
+    getInitialData = (serverContext) => getDataHandler({
+      ...serverContext,
       ...this.props
     })
     handleRequest = (promise) => {
@@ -109,12 +129,12 @@ const withData = (
     }
     componentDidMount () {
       if (this.props.dataStore.getById(id) == null) {
-        this.handleRequest(getData(this.props))
+        this.handleRequest(getDataHandler(this.props))
       }
     }
     componentDidUpdate (prevProps) {
       if (shouldDataUpdate(prevProps, this.props)) {
-        this.handleRequest(getData(this.props))
+        this.handleRequest(getDataHandler(this.props))
       }
     }
     componentWillUnmount () {
@@ -122,7 +142,7 @@ const withData = (
     }
     render () {
       return (
-        <BaseComponent {...mergeProps(this.props, this.state)} />
+        <WrappedComponent {...mergeProps(this.props, this.state)} />
       )
     }
   }
