@@ -8,10 +8,11 @@
 $ yarn add react-get-app-data
 ```
 
+## [API](./docs/api.md)
 
-## Usage
+## Example
 
-### HOC
+As HOC
 
 
 ```js
@@ -33,8 +34,9 @@ ReactDOM.render(<PageWithData />, document.getElementById('root'))
 
 [![Edit pp98jzr4y7](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/pp98jzr4y7)
 
+---
 
-### Static property
+Or as static property inside component
 
 ```js
 import 'isomorphic-fetch'
@@ -86,9 +88,7 @@ import { html } from 'common-tags'
 import HomePage from './pages/home'
 
 export default () => (req, res) => {
-  const appTree = (
-    <HomePage />
-  )
+  const appTree = (<HomePage />)
 
   getAppInitialData(appTree)
     .then((initialData) => {
@@ -96,7 +96,7 @@ export default () => (req, res) => {
 
       res.send(html`
         <!DOCTYPE html>
-        <html class="no-js">
+        <html>
           <body>
             <div id="app">${app}</div>
             <script>
