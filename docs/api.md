@@ -5,18 +5,21 @@
 -   [withData][1]
     -   [Parameters][2]
     -   [Examples][3]
--   [Types][4]
-    -   [GetDataFn][5]
-        -   [Examples][6]
+-   [getAppInitialData][4]
+    -   [Parameters][5]
+    -   [Examples][6]
+-   [Types][7]
+    -   [GetDataFn][8]
+        -   [Examples][9]
 
 ## withData
 
-HOC for getting async data for both initial props and subsequent updates.
+HOC for getting async data for initial component props and in subsequent updates.
 
 ### Parameters
 
--   `getData` **[GetDataFn][7]** 
--   `shouldDataUpdate` **function (prev: Props, next: Props): [boolean][8]**  (optional, default `defaultShouldDataUpdate`)
+-   `getData` **[GetDataFn][10]** 
+-   `shouldDataUpdate` **function (prev: Props, next: Props): [boolean][11]**  (optional, default `defaultShouldDataUpdate`)
 -   `mergeProps` **function (props: Props, state: State): Props**  (optional, default `defaultMergeProps`)
 
 ### Examples
@@ -37,6 +40,56 @@ export default withData(() =>
 
 Returns **HOC** 
 
+## getAppInitialData
+
+Request all app data from `withData` wrapped components deep inside app `tree`, useful on server for propper SSR.
+
+### Parameters
+
+-   `tree` **ReactElement&lt;any>** — Your app root element
+-   `context` **[Object][12]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+-   `dataStore` **DataStoreType**  (optional, default `defaultDataStore`)
+
+### Examples
+
+```javascript
+import React from 'react'
+import { renderToString } from 'react-dom/server'
+import { getAppInitialData } from 'react-get-app-data'
+import { html } from 'common-tags'
+
+import App from './app'
+
+export default () => (req, res) => {
+  const appTree = (<App />)
+
+  getAppInitialData(appTree, { req, res })
+    .then((initialData) => {
+      res.send(html`
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <div id="app">${renderToString(appTree)}</div>
+            <script>
+              (function () {
+                window._ssr = ${JSON.stringify({ initialData })};
+              })();
+            </script>
+            <script src="/client.js"></script>
+          </body>
+        </html>
+      `)
+    })
+    .catch((error) => {
+      console.error(error)
+      res.status(500)
+      res.send(`Error: ${error.message}`)
+    })
+}
+```
+
+Returns **[Promise][13]&lt;[Object][12]>** 
+
 ## Types
 
 
@@ -47,13 +100,14 @@ Returns **HOC**
 Function that returns Promise with props for `withData` wrapped component.
 First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
 
-Type: function (context: [Object][9]): [Promise][10]&lt;([Object][9] \| [boolean][8])>
+Type: function (context: [Object][12]): [Promise][13]&lt;([Object][12] \| [boolean][11])>
 
 #### Examples
 
 ```javascript
-({ isClient, isServer, ...parentProps }) =>
-  Promise.resolve({ message: 'ok' })
+const getData = ({ isClient, isServer, ...parentProps }) => Promise.resolve({
+  message: isServer ? 'server' : 'client'
+})
 ```
 
 [1]: #withdata
@@ -62,16 +116,22 @@ Type: function (context: [Object][9]): [Promise][10]&lt;([Object][9] \| [boolean
 
 [3]: #examples
 
-[4]: #types
+[4]: #getappinitialdata
 
-[5]: #getdatafn
+[5]: #parameters-1
 
 [6]: #examples-1
 
-[7]: #getdatafn
+[7]: #types
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[8]: #getdatafn
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[9]: #examples-2
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[10]: #getdatafn
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

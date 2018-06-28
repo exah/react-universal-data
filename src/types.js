@@ -2,7 +2,7 @@
 
 import type {
   ComponentType,
-  ElementType
+  Element as ReactElement
 } from 'react'
 
 type DataStoreType = {
@@ -32,8 +32,9 @@ type Props = $Shape<{
  *
  * @example
  *
- * ({ isClient, isServer, ...parentProps }) =>
- *   Promise.resolve({ message: 'ok' })
+ * const getData = ({ isClient, isServer, ...parentProps }) => Promise.resolve({
+ *   message: isServer ? 'server' : 'client'
+ * })
  */
 
 type GetDataFn = (context: Object) => Promise<Object | boolean>
@@ -46,7 +47,7 @@ type HOC = (WrappedComponentType) => ComponentType<any>
 
 export type {
   ComponentType,
-  ElementType,
+  ReactElement,
   GetDataFn,
   DataStoreType,
   HOC,

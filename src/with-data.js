@@ -35,7 +35,7 @@ const defaultShouldDataUpdate = (prev, next): boolean => {
   return false
 }
 
-const defaultMergeProps = ({ dataStore, ...props }, state): Object => ({
+const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
   ...props,
   ...state.data,
   isLoading: props.isLoading || state.isLoading,
@@ -43,7 +43,7 @@ const defaultMergeProps = ({ dataStore, ...props }, state): Object => ({
 })
 
 /**
- * HOC for getting async data for both initial props and subsequent updates.
+ * HOC for getting async data for initial component props and in subsequent updates.
  *
  * @example
  *

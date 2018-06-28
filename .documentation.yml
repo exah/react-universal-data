@@ -1,5 +1,6 @@
 toc:
   - withData
+  - getAppInitialData
 
   - name: Types
     children:
