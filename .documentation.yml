@@ -1,6 +1,9 @@
 toc:
   - withData
-  - getAppInitialData
+  - name: SSR
+    children:
+      - getAppInitialData
+      - hydrateData
 
   - name: Types
     children:

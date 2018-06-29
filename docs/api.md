@@ -5,12 +5,16 @@
 -   [withData][1]
     -   [Parameters][2]
     -   [Examples][3]
--   [getAppInitialData][4]
-    -   [Parameters][5]
-    -   [Examples][6]
--   [Types][7]
-    -   [GetDataFn][8]
-        -   [Examples][9]
+-   [SSR][4]
+    -   [getAppInitialData][5]
+        -   [Parameters][6]
+        -   [Examples][7]
+    -   [hydrateData][8]
+        -   [Parameters][9]
+        -   [Examples][10]
+-   [Types][11]
+    -   [GetDataFn][12]
+        -   [Examples][13]
 
 ## withData
 
@@ -18,8 +22,8 @@ HOC for getting async data for initial component props and in subsequent updates
 
 ### Parameters
 
--   `getData` **[GetDataFn][10]** 
--   `shouldDataUpdate` **function (prev: Props, next: Props): [boolean][11]**  (optional, default `defaultShouldDataUpdate`)
+-   `getData` **[GetDataFn][14]** 
+-   `shouldDataUpdate` **function (prev: Props, next: Props): [boolean][15]**  (optional, default `defaultShouldDataUpdate`)
 -   `mergeProps` **function (props: Props, state: State): Props**  (optional, default `defaultMergeProps`)
 
 ### Examples
@@ -40,17 +44,23 @@ export default withData(() =>
 
 Returns **HOC** 
 
-## getAppInitialData
+## SSR
 
-Request all app data from `withData` wrapped components deep inside app `tree`, useful on server for propper SSR.
 
-### Parameters
+
+
+### getAppInitialData
+
+**Server**: Request app data from all `withData` wrapped components
+by walking deep inside root app element [`tree`][16].
+
+#### Parameters
 
 -   `tree` **ReactElement&lt;any>** — Your app root element
--   `context` **[Object][12]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+-   `context` **[Object][17]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
 -   `dataStore` **DataStoreType**  (optional, default `defaultDataStore`)
 
-### Examples
+#### Examples
 
 ```javascript
 import React from 'react'
@@ -88,7 +98,38 @@ export default () => (req, res) => {
 }
 ```
 
-Returns **[Promise][13]&lt;[Object][12]>** 
+Returns **[Promise][18]&lt;[Object][17]>** 
+
+### hydrateData
+
+**Client**: Hydrates SSR state from `getAppInitialData`.
+Must be used before rendering App root component.
+
+#### Parameters
+
+-   `data` **[Object][17]** 
+
+#### Examples
+
+```javascript
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { hydrateData } from 'react-get-app-data'
+import HomePage from './pages/home'
+
+// Get server state
+const { initialData } = (window._ssr || {})
+
+// Restore app state
+hydrateData(initialData)
+
+// Render app
+ReactDOM.hydrate((
+  <HomePage />
+), document.getElementById('app'))
+```
+
+Returns **void** 
 
 ## Types
 
@@ -100,7 +141,7 @@ Returns **[Promise][13]&lt;[Object][12]>**
 Function that returns Promise with props for `withData` wrapped component.
 First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
 
-Type: function (context: [Object][12]): [Promise][13]&lt;([Object][12] \| [boolean][11])>
+Type: function (context: [Object][17]): [Promise][18]&lt;([Object][17] \| [boolean][15])>
 
 #### Examples
 
@@ -116,22 +157,32 @@ const getData = ({ isClient, isServer, ...parentProps }) => Promise.resolve({
 
 [3]: #examples
 
-[4]: #getappinitialdata
+[4]: #ssr
 
-[5]: #parameters-1
+[5]: #getappinitialdata
 
-[6]: #examples-1
+[6]: #parameters-1
 
-[7]: #types
+[7]: #examples-1
 
-[8]: #getdatafn
+[8]: #hydratedata
 
-[9]: #examples-2
+[9]: #parameters-2
 
-[10]: #getdatafn
+[10]: #examples-2
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[11]: #types
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[12]: #getdatafn
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[13]: #examples-3
+
+[14]: #getdatafn
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[16]: https://github.com/ctrlplusb/react-tree-walker/
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

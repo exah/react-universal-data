@@ -9,7 +9,8 @@ import reactTreeWalker from 'react-tree-walker'
 import { defaultDataStore } from './data-store'
 
 /**
- * Request all app data from `withData` wrapped components deep inside app `tree`, useful on server for propper SSR.
+ * **Server**: Request app data from all `withData` wrapped components
+ * by walking deep inside root app element [`tree`](https://github.com/ctrlplusb/react-tree-walker/).
  *
  * @param tree — Your app root element
  * @param context — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).

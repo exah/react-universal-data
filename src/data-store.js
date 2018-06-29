@@ -25,6 +25,31 @@ const createDataStore = (initialData?: Object): DataStoreType => {
 }
 
 const defaultDataStore = createDataStore()
+
+/**
+ * **Client**: Hydrates SSR state from `getAppInitialData`.
+ * Must be used before rendering App root component.
+ *
+ * @example
+ *
+ * import React from 'react'
+ * import ReactDOM from 'react-dom'
+ * import { hydrateData } from 'react-get-app-data'
+ * import HomePage from './pages/home'
+ *
+ * // Get server state
+ * const { initialData } = (window._ssr || {})
+ *
+ * // Restore app state
+ * hydrateData(initialData)
+ *
+ * // Render app
+ * ReactDOM.hydrate((
+ *   <HomePage />
+ * ), document.getElementById('app'))
+ *
+ */
+
 const hydrateData = (data?: Object): void => defaultDataStore.init(data)
 
 export {
