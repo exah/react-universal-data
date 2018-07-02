@@ -13,7 +13,7 @@ import { defaultDataStore } from './data-store'
  * by walking deep inside root app element [`tree`](https://github.com/ctrlplusb/react-tree-walker/).
  *
  * @param tree — Your app root element
- * @param context — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+ * @param serverContext — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
  *
  * @example
  *
@@ -55,7 +55,7 @@ import { defaultDataStore } from './data-store'
 
 const getAppInitialData = (
   tree: ReactElement<any>,
-  context: Object,
+  serverContext: Object,
   dataStore: DataStoreType = defaultDataStore
 ): Promise<Object> => {
   dataStore.init()
@@ -64,7 +64,7 @@ const getAppInitialData = (
     reactTreeWalker(tree, (el, instance) => {
       if (instance && instance.getInitialData) {
         return instance
-          .getInitialData(context)
+          .getInitialData(serverContext)
           .catch((error) => {
             reject(error)
             return false

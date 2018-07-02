@@ -57,7 +57,7 @@ by walking deep inside root app element [`tree`][16].
 #### Parameters
 
 -   `tree` **ReactElement&lt;any>** — Your app root element
--   `context` **[Object][17]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+-   `serverContext` **[Object][17]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
 -   `dataStore` **DataStoreType**  (optional, default `defaultDataStore`)
 
 #### Examples
