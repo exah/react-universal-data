@@ -20,6 +20,7 @@ type State = {
 }
 
 type Props = $Shape<{
+  id: string | number,
   match: Object,
   location: Object,
   isLoading: boolean,

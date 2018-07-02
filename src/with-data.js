@@ -32,7 +32,7 @@ const defaultShouldDataUpdate = (prev, next): boolean => {
     )
   }
 
-  return false
+  return prev.id !== next.id
 }
 
 const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
