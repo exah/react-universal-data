@@ -31,11 +31,21 @@ type Props = $Shape<{
  * Function that returns Promise with props for `withData` wrapped component.
  * First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
  *
+ * If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
+ * in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
+ *
  * @example
  *
  * const getData = ({ isClient, isServer, ...parentProps }, prevData) => Promise.resolve({
  *   message: isServer ? 'server' : 'client'
  * })
+ *
+ * @example
+ *
+ * const getData = (contextProps, prevData) =>
+ *   prevData
+ *     ? Promise.resolve(null) // data in state will not update
+ *     : Promise.resolve({ message: 'ok' })
  */
 
 type GetDataFn = (context: Object, prevData: Object) => Promise<Object | boolean | null>

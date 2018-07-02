@@ -77,7 +77,7 @@ const withData = (
       ...context
     }, prevData)
 
-    promise.then((data) => context.dataStore.save(id, data))
+    promise.then((data) => data && context.dataStore.save(id, data))
 
     return promise
   }
@@ -126,8 +126,9 @@ const withData = (
       this.setState({ isLoading: true })
 
       promise
-        .then((data) => this.setState({ isLoading: false, data }))
-        .catch((error) => this.setState({ isLoading: false, error }))
+        .then((data) => data && this.setState({ data }))
+        .catch((error) => this.setState({ error }))
+        .then(() => this.setState({ isLoading: false }))
 
       return promise
     }

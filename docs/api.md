@@ -141,6 +141,9 @@ Returns **void**
 Function that returns Promise with props for `withData` wrapped component.
 First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
 
+If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
+in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
+
 Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt;([Object][17] \| [boolean][15] | null)>
 
 #### Examples
@@ -149,6 +152,13 @@ Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt
 const getData = ({ isClient, isServer, ...parentProps }, prevData) => Promise.resolve({
   message: isServer ? 'server' : 'client'
 })
+```
+
+```javascript
+const getData = (contextProps, prevData) =>
+  prevData
+    ? Promise.resolve(null) // data in state will not update
+    : Promise.resolve({ message: 'ok' })
 ```
 
 [1]: #withdata
