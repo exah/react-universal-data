@@ -66,7 +66,7 @@ const withData = (
   mergeProps: (props: Props, state: State) => Props = defaultMergeProps
 ): HOC => (WrappedComponent: WrappedComponentType) => {
   let id = INITIAL_ID
-  let unmountedProps = {}
+  let unmountedProps = null
 
   const getDataPromise = getData || WrappedComponent.getData || defaultGetData
 
@@ -100,7 +100,11 @@ const withData = (
     constructor (props) {
       super(props)
 
-      if (id !== INITIAL_ID && shouldDataUpdate(unmountedProps, props)) {
+      if (
+        id !== INITIAL_ID &&
+        unmountedProps != null &&
+        shouldDataUpdate(unmountedProps, props)
+      ) {
         id = INITIAL_ID
       }
 
