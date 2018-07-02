@@ -37,7 +37,7 @@ const defaultShouldDataUpdate = (prev, next): boolean => {
 
 const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
   ...props,
-  ...state.data,
+  ...(Array.isArray(state.data) ? { data: state.data } : state.data),
   isLoading: props.isLoading || state.isLoading,
   error: state.error || props.error || null
 })

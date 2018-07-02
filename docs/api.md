@@ -144,21 +144,35 @@ First argument is **Object** with `isClient`, `isServer` flags, parent component
 If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
 in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
 
-Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt;([Object][17] \| [boolean][15] | null)>
+Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt;({} | \[] | [boolean][15] | null)>
 
 #### Examples
 
 ```javascript
-const getData = ({ isClient, isServer, ...parentProps }, prevData) => Promise.resolve({
-  message: isServer ? 'server' : 'client'
-})
+const getData = ({ isClient, isServer, ...parentProps }) =>
+  Promise.resolve({ message: isServer ? 'server' : 'client' })
+
+// SSR
+// props -> { message: 'server' }
+
+// Client (after update)
+// props -> { message: 'client' }
 ```
 
 ```javascript
 const getData = (contextProps, prevData) =>
-  prevData
+  prevData // this is update
     ? Promise.resolve(null) // data in state will not update
     : Promise.resolve({ message: 'ok' })
+
+// props -> { message: 'ok' }
+```
+
+```javascript
+const getData = (contextProps, prevData) =>
+  Promise.resolve([ 1, 2, 3, 4 ]) // arrays will be passed as `data` prop
+
+// props -> { data: [ 1, 2, 3, 4 ] }
 ```
 
 [1]: #withdata

@@ -13,8 +13,8 @@ const FunctionalComp = ({ message }) => (
   </div>
 )
 
-const FunctionalCompWithData = withData(
-  ({ result }) => sleep(10).then(() => result ? { message: `hoc-${result}` } : null)
+const FunctionalCompWithData = withData(({ result }) =>
+  sleep(10).then(() => result ? { message: `hoc-${result}` } : null)
 )(FunctionalComp)
 
 class ClassComp extends Component {
@@ -38,10 +38,21 @@ class ClassComp extends Component {
 
 const ClassCompWithData = withData()(ClassComp)
 
+const ArrayComp = ({ data = [] }) => (
+  <div>
+    {data.map((id) => <span key={id}>{id}</span>)}
+  </div>
+)
+
+const ArrayCompWithData = withData(() =>
+  Promise.resolve([ 1, 2, 3 ])
+)(ArrayComp)
+
 const App = (props) => (
   <div>
     <FunctionalCompWithData {...props} />
     <ClassCompWithData {...props} />
+    <ArrayCompWithData />
   </div>
 )
 
@@ -49,12 +60,14 @@ const appElement = (<App id={1} result='id-1' />)
 const renderer = TestRenderer.create(appElement)
 const fnComp = renderer.root.findByType(FunctionalComp)
 const classComp = renderer.root.findByType(ClassComp)
+const arrComp = renderer.root.findByType(ArrayComp)
 
 test('withData: init: hoc callback', async (t) => {
   await sleep(10)
 
   t.is(fnComp.props.message, 'hoc-id-1')
   t.is(fnComp.parent.instance.state.data.message, 'hoc-id-1')
+  t.deepEqual(arrComp.props.data, [ 1, 2, 3 ])
 })
 
 test('withData: init: class component getData static prop', async (t) => {

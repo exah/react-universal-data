@@ -23,6 +23,7 @@ type Props = $Shape<{
   id: string | number,
   match: Object,
   location: Object,
+  data: ? Array<any>,
   isLoading: boolean,
   error: Error | null
 }>
@@ -36,19 +37,33 @@ type Props = $Shape<{
  *
  * @example
  *
- * const getData = ({ isClient, isServer, ...parentProps }, prevData) => Promise.resolve({
- *   message: isServer ? 'server' : 'client'
- * })
+ * const getData = ({ isClient, isServer, ...parentProps }) =>
+ *   Promise.resolve({ message: isServer ? 'server' : 'client' })
+ *
+ * // SSR
+ * // props -> { message: 'server' }
+ *
+ * // Client (after update)
+ * // props -> { message: 'client' }
  *
  * @example
  *
  * const getData = (contextProps, prevData) =>
- *   prevData
+ *   prevData // this is update
  *     ? Promise.resolve(null) // data in state will not update
  *     : Promise.resolve({ message: 'ok' })
+ *
+ * // props -> { message: 'ok' }
+ *
+ * @example
+ *
+ * const getData = (contextProps, prevData) =>
+ *   Promise.resolve([ 1, 2, 3, 4 ]) // arrays will be passed as `data` prop
+ *
+ * // props -> { data: [ 1, 2, 3, 4 ] }
  */
 
-type GetDataFn = (context: Object, prevData: Object) => Promise<Object | boolean | null>
+type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolean | null>
 
 type WrappedComponentType = {
   getData?: GetDataFn
