@@ -70,12 +70,12 @@ const withData = (
 
   const getDataPromise = getData || WrappedComponent.getData || defaultGetData
 
-  const getDataHandler = (context) => {
+  const getDataHandler = (context, prevData) => {
     const promise = getDataPromise({
       isClient: IS_CLIENT,
       isServer: IS_SERVER,
       ...context
-    })
+    }, prevData)
 
     promise.then((data) => context.dataStore.save(id, data))
 
@@ -121,7 +121,7 @@ const withData = (
     getInitialData = (serverContext) => getDataHandler({
       ...serverContext,
       ...this.props
-    })
+    }, this.state.data)
     handleRequest = (promise) => {
       this.setState({ isLoading: true })
 
@@ -133,12 +133,12 @@ const withData = (
     }
     componentDidMount () {
       if (this.props.dataStore.getById(id) == null) {
-        this.handleRequest(getDataHandler(this.props))
+        this.handleRequest(getDataHandler(this.props, this.state.data))
       }
     }
     componentDidUpdate (prevProps) {
       if (shouldDataUpdate(prevProps, this.props)) {
-        this.handleRequest(getDataHandler(this.props))
+        this.handleRequest(getDataHandler(this.props, this.state.data))
       }
     }
     componentWillUnmount () {

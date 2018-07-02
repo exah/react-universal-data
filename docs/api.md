@@ -141,12 +141,12 @@ Returns **void**
 Function that returns Promise with props for `withData` wrapped component.
 First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
 
-Type: function (context: [Object][17]): [Promise][18]&lt;([Object][17] \| [boolean][15])>
+Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt;([Object][17] \| [boolean][15] | null)>
 
 #### Examples
 
 ```javascript
-const getData = ({ isClient, isServer, ...parentProps }) => Promise.resolve({
+const getData = ({ isClient, isServer, ...parentProps }, prevData) => Promise.resolve({
   message: isServer ? 'server' : 'client'
 })
 ```

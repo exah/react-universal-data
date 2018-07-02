@@ -33,12 +33,12 @@ type Props = $Shape<{
  *
  * @example
  *
- * const getData = ({ isClient, isServer, ...parentProps }) => Promise.resolve({
+ * const getData = ({ isClient, isServer, ...parentProps }, prevData) => Promise.resolve({
  *   message: isServer ? 'server' : 'client'
  * })
  */
 
-type GetDataFn = (context: Object) => Promise<Object | boolean>
+type GetDataFn = (context: Object, prevData: Object) => Promise<Object | boolean | null>
 
 type WrappedComponentType = {
   getData?: GetDataFn
