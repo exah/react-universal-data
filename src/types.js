@@ -30,10 +30,10 @@ type Props = $Shape<{
 
 /**
  * Function that returns Promise with props for `withData` wrapped component.
- * First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
+ * First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getInitialData`.
  *
  * If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
- * in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
+ * in `getInitialData` `false` value will prevent requesting data inside that element tree.
  *
  * @example
  *

@@ -19,7 +19,7 @@ import { defaultDataStore } from './data-store'
  *
  * import React from 'react'
  * import { renderToString } from 'react-dom/server'
- * import { getAppInitialData } from 'react-get-app-data'
+ * import { getInitialData } from 'react-get-app-data'
  * import { html } from 'common-tags'
  *
  * import App from './app'
@@ -27,7 +27,7 @@ import { defaultDataStore } from './data-store'
  * export default () => (req, res) => {
  *   const appElement = (<App />)
  *
- *   getAppInitialData(appElement, { req, res })
+ *   getInitialData(appElement, { req, res })
  *     .then((initialData) => {
  *       res.send(html`
  *         <!DOCTYPE html>
@@ -53,7 +53,7 @@ import { defaultDataStore } from './data-store'
  *
  */
 
-const getAppInitialData = (
+const getInitialData = (
   rootElement: ReactElement<any>,
   serverContext: Object,
   dataStore: DataStoreType = defaultDataStore
@@ -75,5 +75,5 @@ const getAppInitialData = (
 }
 
 export {
-  getAppInitialData
+  getInitialData
 }

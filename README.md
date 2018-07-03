@@ -83,14 +83,14 @@ With two-step rendering on server
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { getAppInitialData } from 'react-get-app-data'
+import { getInitialData } from 'react-get-app-data'
 import { html } from 'common-tags'
 import App from './app'
 
 export default () => (req, res) => {
   const appElement = (<App />)
 
-  getAppInitialData(appElement)
+  getInitialData(appElement)
     .then((initialData) => {
       const app = renderToString(appElement)
 
@@ -143,7 +143,7 @@ ReactDOM.hydrate((
 
 ## Related
 
-- [react-tree-walker](https://github.com/ctrlplusb/react-tree-walker) - inside `getAppInitialData`
+- [react-tree-walker](https://github.com/ctrlplusb/react-tree-walker) - inside `getInitialData`
 - [webpack-hot-server-middleware](https://www.npmjs.com/package/webpack-hot-server-middleware) - server-side entry for webpack
 - [goremykina.com](https://github.com/exah/goremykina) - usage example
 

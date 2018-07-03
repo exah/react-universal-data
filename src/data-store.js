@@ -27,7 +27,7 @@ const createDataStore = (initialData?: Object): DataStoreType => {
 const defaultDataStore = createDataStore()
 
 /**
- * **Client**: Hydrates SSR state from `getAppInitialData`.
+ * **Client**: Hydrates SSR state from `getInitialData`.
  * Must be used before rendering App root component.
  *
  * @example

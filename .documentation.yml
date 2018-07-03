@@ -2,7 +2,7 @@ toc:
   - withData
   - name: Server-Side Rendering (SSR)
     children:
-      - getAppInitialData
+      - getInitialData
       - hydrateData
 
   - name: Types

@@ -12,5 +12,6 @@ export {
 } from './with-data'
 
 export {
-  getAppInitialData
-} from './get-app-initial-data'
+  getInitialData,
+  getInitialData as getAppInitialData // COMPAT
+} from './get-initial-data'

@@ -7,7 +7,7 @@
     -   [Parameters][3]
     -   [Examples][4]
 -   [Server-Side Rendering (SSR)][5]
-    -   [getAppInitialData][6]
+    -   [getInitialData][6]
         -   [Parameters][7]
         -   [Examples][8]
     -   [hydrateData][9]
@@ -34,7 +34,7 @@ Is combined result of [GetDataFn][13] and [MergePropsFn][17].
 
 -   `isLoading: boolean` — Status of `getData` promise (client)
 -   `error: Error | null` — Error rejected with promise (usually on client) <br>
-    On server you need to return custom `{ error }` inside `Promise.catch` to show errors in component or handle them in `getAppInitialData.catch`. Otherwise component will try to request data again on client after mount.
+    On server you need to return custom `{ error }` inside `Promise.catch` to show errors in component or handle them in `getInitialData.catch`. Otherwise component will try to request data again on client after mount.
 -   `...getDataResult` — Everything returned in `getData` will be passed as props
 
 ### Parameters
@@ -89,7 +89,7 @@ Returns **HOC** — [Higher-Order Component][21]
 
 
 
-### getAppInitialData
+### getInitialData
 
 **Server**: Request app data from all `withData` wrapped components
 by walking deep inside React element [`tree`][22].
@@ -105,7 +105,7 @@ by walking deep inside React element [`tree`][22].
 ```javascript
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { getAppInitialData } from 'react-get-app-data'
+import { getInitialData } from 'react-get-app-data'
 import { html } from 'common-tags'
 
 import App from './app'
@@ -113,7 +113,7 @@ import App from './app'
 export default () => (req, res) => {
   const appElement = (<App />)
 
-  getAppInitialData(appElement, { req, res })
+  getInitialData(appElement, { req, res })
     .then((initialData) => {
       res.send(html`
         <!DOCTYPE html>
@@ -142,7 +142,7 @@ Returns **[Promise][24]&lt;[Object][23]>**
 
 ### hydrateData
 
-**Client**: Hydrates SSR state from `getAppInitialData`.
+**Client**: Hydrates SSR state from `getInitialData`.
 Must be used before rendering App root component.
 
 #### Parameters
@@ -179,10 +179,10 @@ Returns **void**
 ### GetDataFn
 
 Function that returns Promise with props for `withData` wrapped component.
-First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getAppInitialData`.
+First argument is **Object** with `isClient`, `isServer` flags, parent component props and context from `getInitialData`.
 
 If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
-in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
+in `getInitialData` `false` value will prevent requesting data inside that element tree.
 
 Type: function (context: [Object][23], prevData: [Object][23]): [Promise][24]&lt;({} | \[] | [boolean][25] | null)>
 
@@ -302,7 +302,7 @@ Type: function (props: Props, state: State): Props
 
 [5]: #server-side-rendering-ssr
 
-[6]: #getappinitialdata
+[6]: #getinitialdata
 
 [7]: #parameters-1
 

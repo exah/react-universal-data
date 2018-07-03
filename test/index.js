@@ -3,7 +3,7 @@
 import test from 'ava'
 import React, { Component } from 'react'
 import TestRenderer from 'react-test-renderer'
-import { getAppInitialData } from '../src/get-app-initial-data'
+import { getInitialData } from '../src/get-initial-data'
 import { withData } from '../src/with-data'
 import { sleep } from './_helpers'
 
@@ -76,8 +76,8 @@ test('withData: init: class component getData static prop', async (t) => {
   t.is(classComp.props.message, 'static-id-1')
 })
 
-test('getAppInitialData: call getInitialData prop in app element tree', async (t) => {
-  const initialData = await getAppInitialData(appElement)
+test('getInitialData: call getInitialData prop in app element tree', async (t) => {
+  const initialData = await getInitialData(appElement)
 
   t.is(initialData['1'].message, 'hoc-id-1')
   t.is(initialData['2'].message, 'static-id-1')
