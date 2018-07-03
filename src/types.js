@@ -130,10 +130,10 @@ type ShouldDataUpdateFn = (prev: Props, next: Props) => boolean
  *
  * ```js
  * const defaultMergeProps = ({ dataStore, ...props }, state) => ({
- *   ...props,
- *   ...(Array.isArray(state.data) ? { data: state.data } : state.data),
+ *   ..props,
  *   isLoading: props.isLoading || state.isLoading,
- *   error: state.error || props.error || null
+ *   error: state.error || props.error || null,
+ *   ...(Array.isArray(state.data) ? { data: state.data } : state.data)
  * })
  * ```
  */

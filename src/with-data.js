@@ -37,9 +37,9 @@ const defaultShouldDataUpdate: ShouldDataUpdateFn = (prev, next) => {
 
 const defaultMergeProps: MergePropsFn = ({ dataStore, ...props }, state) => ({
   ...props,
-  ...(Array.isArray(state.data) ? { data: state.data } : state.data),
   isLoading: props.isLoading || state.isLoading,
-  error: state.error || props.error || null
+  error: state.error || props.error || null,
+  ...(Array.isArray(state.data) ? { data: state.data } : state.data)
 })
 
 /**
