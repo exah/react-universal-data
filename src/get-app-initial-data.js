@@ -10,9 +10,9 @@ import { defaultDataStore } from './data-store'
 
 /**
  * **Server**: Request app data from all `withData` wrapped components
- * by walking deep inside root app element [`tree`](https://github.com/ctrlplusb/react-tree-walker/).
+ * by walking deep inside React element [`tree`](https://github.com/ctrlplusb/react-tree-walker/).
  *
- * @param tree — Your app root element
+ * @param rootElement — Your app root React element
  * @param serverContext — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
  *
  * @example
@@ -25,15 +25,15 @@ import { defaultDataStore } from './data-store'
  * import App from './app'
  *
  * export default () => (req, res) => {
- *   const appTree = (<App />)
+ *   const appElement = (<App />)
  *
- *   getAppInitialData(appTree, { req, res })
+ *   getAppInitialData(appElement, { req, res })
  *     .then((initialData) => {
  *       res.send(html`
  *         <!DOCTYPE html>
  *         <html>
  *           <body>
- *             <div id="app">${renderToString(appTree)}</div>
+ *             <div id="app">${renderToString(appElement)}</div>
  *             <script>
  *               (function () {
  *                 window._ssr = ${JSON.stringify({ initialData })};
@@ -54,14 +54,14 @@ import { defaultDataStore } from './data-store'
  */
 
 const getAppInitialData = (
-  tree: ReactElement<any>,
+  rootElement: ReactElement<any>,
   serverContext: Object,
   dataStore: DataStoreType = defaultDataStore
 ): Promise<Object> => {
   dataStore.init()
 
   return new Promise((resolve, reject) =>
-    reactTreeWalker(tree, (el, instance) => {
+    reactTreeWalker(rootElement, (el, instance) => {
       if (instance && instance.getInitialData) {
         return instance
           .getInitialData(serverContext)

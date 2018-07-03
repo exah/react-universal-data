@@ -72,7 +72,7 @@ ReactDOM.render(<PageWithData />, document.getElementById('root'))
 [![Edit ovxkz1ojj9](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ovxkz1ojj9)
 
 
-### SSR
+### Server-Side Rendering
 
 <details>
   
@@ -85,14 +85,14 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { getAppInitialData } from 'react-get-app-data'
 import { html } from 'common-tags'
-import HomePage from './pages/home'
+import App from './app'
 
 export default () => (req, res) => {
-  const appTree = (<HomePage />)
+  const appElement = (<App />)
 
-  getAppInitialData(appTree)
+  getAppInitialData(appElement)
     .then((initialData) => {
-      const app = renderToString(appTree)
+      const app = renderToString(appElement)
 
       res.send(html`
         <!DOCTYPE html>
@@ -125,7 +125,7 @@ Hydrate app and initialData in client
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { hydrateData } from 'react-get-app-data'
-import HomePage from './pages/home'
+import App from './app'
 
 // Get server state
 const { initialData } = (window._ssr || {})
@@ -135,7 +135,7 @@ hydrateData(initialData)
 
 // Render app
 ReactDOM.hydrate((
-  <HomePage />
+  <App />
 ), document.getElementById('app'))
 ```
 

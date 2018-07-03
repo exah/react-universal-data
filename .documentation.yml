@@ -1,6 +1,6 @@
 toc:
   - withData
-  - name: SSR
+  - name: Server-Side Rendering (SSR)
     children:
       - getAppInitialData
       - hydrateData
@@ -8,3 +8,4 @@ toc:
   - name: Types
     children:
       - GetDataFn
+      - ShouldDataUpdateFn

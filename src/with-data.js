@@ -2,6 +2,7 @@
 
 import type {
   GetDataFn,
+  ShouldDataUpdateFn,
   DataStoreType,
   WrappedComponentType,
   HOC,
@@ -23,7 +24,7 @@ import {
 
 const defaultGetData: GetDataFn = () => Promise.resolve(false)
 
-const defaultShouldDataUpdate = (prev, next): boolean => {
+const defaultShouldDataUpdate: ShouldDataUpdateFn = (prev, next) => {
   if (prev.match && prev.location) {
     return !(
       shallowEqual(prev.match.params, next.match.params) &&
@@ -43,7 +44,15 @@ const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
 })
 
 /**
- * HOC for getting async data for initial component props and in subsequent updates.
+ * Higher-Order Component for getting async data for initial component props and in subsequent updates.
+ *
+ * ```js
+ * const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
+ * ```
+ *
+ * @param getData — Function that returns promise with props for wrapped component
+ *
+ * @return — [Higher-Order Component](https://reactjs.org/docs/higher-order-components.html)
  *
  * @example
  *
@@ -55,14 +64,37 @@ const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
  *   </div>
  * )
  *
- * export default withData(() =>
+ * export default withData((contextAndProps, prevData) =>
  *   Promise.resolve({ message: 'ok' })
  * )(Page)
+ *
+ * @example
+ *
+ * import React from 'react'
+ * import { withData } from 'react-get-app-data'
+ *
+ * class Page extends React.Component {
+ *   // Same as `withData` first argument
+ *   static async getData (contextAndProps, prevData) {
+ *     return {
+ *       name: 'John'
+ *     }
+ *   }
+ *   render () {
+ *     return (
+ *       <div>
+ *         Hello {this.props.name}!
+ *       </div>
+ *     )
+ *   }
+ * }
+ *
+ * export default withData()(Page)
  */
 
 const withData = (
   getData: GetDataFn,
-  shouldDataUpdate: (prev: Props, next: Props) => boolean = defaultShouldDataUpdate,
+  shouldDataUpdate: ShouldDataUpdateFn = defaultShouldDataUpdate,
   mergeProps: (props: Props, state: State) => Props = defaultMergeProps
 ): HOC => (WrappedComponent: WrappedComponentType) => {
   let id = INITIAL_ID

@@ -40,11 +40,13 @@ type Props = $Shape<{
  * const getData = ({ isClient, isServer, ...parentProps }) =>
  *   Promise.resolve({ message: isServer ? 'server' : 'client' })
  *
+ * withData(getData)(Comp)
+ *
  * // SSR
- * // props -> { message: 'server' }
+ * // Comp props -> { message: 'server' }
  *
  * // Client (after update)
- * // props -> { message: 'client' }
+ * // Comp props -> { message: 'client' }
  *
  * @example
  *
@@ -53,17 +55,57 @@ type Props = $Shape<{
  *     ? Promise.resolve(null) // data in state will not update
  *     : Promise.resolve({ message: 'ok' })
  *
- * // props -> { message: 'ok' }
+ * withData(getData)(Comp)
+ *
+ * // Comp props -> { message: 'ok' }
  *
  * @example
  *
  * const getData = (contextProps, prevData) =>
  *   Promise.resolve([ 1, 2, 3, 4 ]) // arrays will be passed as `data` prop
  *
- * // props -> { data: [ 1, 2, 3, 4 ] }
+ * withData(getData)(Comp)
+ *
+ * // Comp props -> { data: [ 1, 2, 3, 4 ] }
  */
 
 type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolean | null>
+
+/**
+ * Function that checks if new data should be requested with `GetDataFn` when recieving new props.
+ *
+ * By default it compares [React Router](https://reacttraining.com/react-router) [`match.params`](https://reacttraining.com/react-router/web/api/match), [`location.pathname`](https://reacttraining.com/react-router/web/api/location), `location.search` props for updates. Also you can change `id` prop on component to indicate update.
+ *
+ * @example
+ *
+ * withData(
+ *   (props) => api.getPage({ slug: props.slug, lang: props.lang }),
+ *   (prevProps, nextProps) => prevProps.lang !== nextProps.lang // update data only on lang change
+ * )
+ *
+ * @example
+ *
+ * withData(
+ *   () => api.getSomeStuff(),
+ *   () => false // request data once
+ * )
+ *
+ * @example
+ *
+ * const Comp = withData(() => api.getSomeStuff())(TargetComp)
+ *
+ * // Update behaviour
+ * // Get data on first render
+ * <Comp id={1} />
+ *
+ * // Updates because we changed `id` prop
+ * <Comp id={2} />
+ *
+ * // Nothing changed
+ * <Comp id={2} />
+ */
+
+type ShouldDataUpdateFn = (prev: Props, next: Props) => boolean
 
 type WrappedComponentType = {
   getData?: GetDataFn
@@ -75,6 +117,7 @@ export type {
   ComponentType,
   ReactElement,
   GetDataFn,
+  ShouldDataUpdateFn,
   DataStoreType,
   HOC,
   State,

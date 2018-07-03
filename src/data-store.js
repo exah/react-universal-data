@@ -35,7 +35,7 @@ const defaultDataStore = createDataStore()
  * import React from 'react'
  * import ReactDOM from 'react-dom'
  * import { hydrateData } from 'react-get-app-data'
- * import HomePage from './pages/home'
+ * import App from './app'
  *
  * // Get server state
  * const { initialData } = (window._ssr || {})
@@ -45,7 +45,7 @@ const defaultDataStore = createDataStore()
  *
  * // Render app
  * ReactDOM.hydrate((
- *   <HomePage />
+ *   <App />
  * ), document.getElementById('app'))
  *
  */

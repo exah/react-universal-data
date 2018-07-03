@@ -5,7 +5,7 @@
 -   [withData][1]
     -   [Parameters][2]
     -   [Examples][3]
--   [SSR][4]
+-   [Server-Side Rendering (SSR)][4]
     -   [getAppInitialData][5]
         -   [Parameters][6]
         -   [Examples][7]
@@ -15,15 +15,21 @@
 -   [Types][11]
     -   [GetDataFn][12]
         -   [Examples][13]
+    -   [ShouldDataUpdateFn][14]
+        -   [Examples][15]
 
 ## withData
 
-HOC for getting async data for initial component props and in subsequent updates.
+Higher-Order Component for getting async data for initial component props and in subsequent updates.
+
+```js
+const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
+```
 
 ### Parameters
 
--   `getData` **[GetDataFn][14]** 
--   `shouldDataUpdate` **function (prev: Props, next: Props): [boolean][15]**  (optional, default `defaultShouldDataUpdate`)
+-   `getData` **[GetDataFn][16]** — Function that returns promise with props for wrapped component
+-   `shouldDataUpdate` **[ShouldDataUpdateFn][17]**  (optional, default `defaultShouldDataUpdate`)
 -   `mergeProps` **function (props: Props, state: State): Props**  (optional, default `defaultMergeProps`)
 
 ### Examples
@@ -37,14 +43,37 @@ const Page = ({ message }) => (
   </div>
 )
 
-export default withData(() =>
+export default withData((contextAndProps, prevData) =>
   Promise.resolve({ message: 'ok' })
 )(Page)
 ```
 
-Returns **HOC** 
+```javascript
+import React from 'react'
+import { withData } from 'react-get-app-data'
 
-## SSR
+class Page extends React.Component {
+  // Same as `withData` first argument
+  static async getData (contextAndProps, prevData) {
+    return {
+      name: 'John'
+    }
+  }
+  render () {
+    return (
+      <div>
+        Hello {this.props.name}!
+      </div>
+    )
+  }
+}
+
+export default withData()(Page)
+```
+
+Returns **HOC** — [Higher-Order Component][18]
+
+## Server-Side Rendering (SSR)
 
 
 
@@ -52,12 +81,12 @@ Returns **HOC**
 ### getAppInitialData
 
 **Server**: Request app data from all `withData` wrapped components
-by walking deep inside root app element [`tree`][16].
+by walking deep inside React element [`tree`][19].
 
 #### Parameters
 
--   `tree` **ReactElement&lt;any>** — Your app root element
--   `serverContext` **[Object][17]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+-   `rootElement` **ReactElement&lt;any>** — Your app root React element
+-   `serverContext` **[Object][20]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
 -   `dataStore` **DataStoreType**  (optional, default `defaultDataStore`)
 
 #### Examples
@@ -71,15 +100,15 @@ import { html } from 'common-tags'
 import App from './app'
 
 export default () => (req, res) => {
-  const appTree = (<App />)
+  const appElement = (<App />)
 
-  getAppInitialData(appTree, { req, res })
+  getAppInitialData(appElement, { req, res })
     .then((initialData) => {
       res.send(html`
         <!DOCTYPE html>
         <html>
           <body>
-            <div id="app">${renderToString(appTree)}</div>
+            <div id="app">${renderToString(appElement)}</div>
             <script>
               (function () {
                 window._ssr = ${JSON.stringify({ initialData })};
@@ -98,7 +127,7 @@ export default () => (req, res) => {
 }
 ```
 
-Returns **[Promise][18]&lt;[Object][17]>** 
+Returns **[Promise][21]&lt;[Object][20]>** 
 
 ### hydrateData
 
@@ -107,7 +136,7 @@ Must be used before rendering App root component.
 
 #### Parameters
 
--   `data` **[Object][17]** 
+-   `data` **[Object][20]** 
 
 #### Examples
 
@@ -115,7 +144,7 @@ Must be used before rendering App root component.
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { hydrateData } from 'react-get-app-data'
-import HomePage from './pages/home'
+import App from './app'
 
 // Get server state
 const { initialData } = (window._ssr || {})
@@ -125,7 +154,7 @@ hydrateData(initialData)
 
 // Render app
 ReactDOM.hydrate((
-  <HomePage />
+  <App />
 ), document.getElementById('app'))
 ```
 
@@ -144,7 +173,7 @@ First argument is **Object** with `isClient`, `isServer` flags, parent component
 If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
 in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
 
-Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt;({} | \[] | [boolean][15] | null)>
+Type: function (context: [Object][20], prevData: [Object][20]): [Promise][21]&lt;({} | \[] | [boolean][22] | null)>
 
 #### Examples
 
@@ -152,11 +181,13 @@ Type: function (context: [Object][17], prevData: [Object][17]): [Promise][18]&lt
 const getData = ({ isClient, isServer, ...parentProps }) =>
   Promise.resolve({ message: isServer ? 'server' : 'client' })
 
+withData(getData)(Comp)
+
 // SSR
-// props -> { message: 'server' }
+// Comp props -> { message: 'server' }
 
 // Client (after update)
-// props -> { message: 'client' }
+// Comp props -> { message: 'client' }
 ```
 
 ```javascript
@@ -165,14 +196,56 @@ const getData = (contextProps, prevData) =>
     ? Promise.resolve(null) // data in state will not update
     : Promise.resolve({ message: 'ok' })
 
-// props -> { message: 'ok' }
+withData(getData)(Comp)
+
+// Comp props -> { message: 'ok' }
 ```
 
 ```javascript
 const getData = (contextProps, prevData) =>
   Promise.resolve([ 1, 2, 3, 4 ]) // arrays will be passed as `data` prop
 
-// props -> { data: [ 1, 2, 3, 4 ] }
+withData(getData)(Comp)
+
+// Comp props -> { data: [ 1, 2, 3, 4 ] }
+```
+
+### ShouldDataUpdateFn
+
+Function that checks if new data should be requested with `GetDataFn` when recieving new props.
+
+By default it compares [React Router][23] [`match.params`][24], [`location.pathname`][25], `location.search` props for updates. Also you can change `id` prop on component to indicate update.
+
+Type: function (prev: Props, next: Props): [boolean][22]
+
+#### Examples
+
+```javascript
+withData(
+  (props) => api.getPage({ slug: props.slug, lang: props.lang }),
+  (prevProps, nextProps) => prevProps.lang !== nextProps.lang // update data only on lang change
+)
+```
+
+```javascript
+withData(
+  () => api.getSomeStuff(),
+  () => false // request data once
+)
+```
+
+```javascript
+const Comp = withData(() => api.getSomeStuff())(TargetComp)
+
+// Update behaviour
+// Get data on first render
+<Comp id={1} />
+
+// Updates because we changed `id` prop
+<Comp id={2} />
+
+// Nothing changed
+<Comp id={2} />
 ```
 
 [1]: #withdata
@@ -181,7 +254,7 @@ const getData = (contextProps, prevData) =>
 
 [3]: #examples
 
-[4]: #ssr
+[4]: #server-side-rendering-ssr
 
 [5]: #getappinitialdata
 
@@ -201,12 +274,26 @@ const getData = (contextProps, prevData) =>
 
 [13]: #examples-3
 
-[14]: #getdatafn
+[14]: #shoulddataupdatefn
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[15]: #examples-4
 
-[16]: https://github.com/ctrlplusb/react-tree-walker/
+[16]: #getdatafn
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[17]: #shoulddataupdatefn
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[18]: https://reactjs.org/docs/higher-order-components.html
+
+[19]: https://github.com/ctrlplusb/react-tree-walker/
+
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[23]: https://reacttraining.com/react-router
+
+[24]: https://reacttraining.com/react-router/web/api/match
+
+[25]: https://reacttraining.com/react-router/web/api/location
