@@ -118,28 +118,34 @@ const withData = (
         data: props.dataStore.getById(id)
       }
     }
-    getInitialData = (serverContext) => getDataHandler({
-      ...serverContext,
-      ...this.props
-    }, this.state.data)
-    handleRequest = (promise) => {
+    _handleRequest = (requestPromise) => {
       this.setState({ isLoading: true })
 
-      promise
+      requestPromise
         .then((data) => data && this.setState({ data }))
         .catch((error) => this.setState({ error }))
         .then(() => this.setState({ isLoading: false }))
 
-      return promise
+      return requestPromise
     }
+    getInitialData = (serverContext) => getDataHandler(
+      { ...serverContext, ...this.props },
+      this.state.data
+    )
+    getData = () => this._handleRequest(
+      getDataHandler(
+        this.props,
+        this.state.data
+      )
+    )
     componentDidMount () {
       if (this.props.dataStore.getById(id) == null) {
-        this.handleRequest(getDataHandler(this.props, this.state.data))
+        this.getData()
       }
     }
     componentDidUpdate (prevProps) {
       if (shouldDataUpdate(prevProps, this.props)) {
-        this.handleRequest(getDataHandler(this.props, this.state.data))
+        this.getData()
       }
     }
     componentWillUnmount () {
