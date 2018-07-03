@@ -74,27 +74,43 @@ type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolea
 /**
  * Function that checks if new data should be requested with `GetDataFn` when recieving new props.
  *
- * By default it compares [React Router](https://reacttraining.com/react-router) [`match.params`](https://reacttraining.com/react-router/web/api/match), [`location.pathname`](https://reacttraining.com/react-router/web/api/location), `location.search` props for updates. Also you can change `id` prop on component to indicate update.
+ * By default it compares [React Router](https://reacttraining.com/react-router) [`match.params`](https://reacttraining.com/react-router/web/api/match), [`location.pathname`](https://reacttraining.com/react-router/web/api/location), `location.search` props. Also you can change `id` prop on component to indicate update.
+ *
+ * ```js
+ * const defaultShouldDataUpdate = (prev, next) => {
+ *   if (prev.match && prev.location) {
+ *     return !(
+ *       shallowEqual(prev.match.params, next.match.params) &&
+ *       prev.location.pathname === next.location.pathname &&
+ *       prev.location.search === next.location.search
+ *     )
+ *   }
+ *
+ *   return prev.id !== next.id
+ * }
+ * ```
  *
  * @example
  *
+ * // update data only on lang change
  * withData(
  *   (props) => api.getPage({ slug: props.slug, lang: props.lang }),
- *   (prevProps, nextProps) => prevProps.lang !== nextProps.lang // update data only on lang change
+ *   (prevProps, nextProps) => prevProps.lang !== nextProps.lang
  * )
  *
  * @example
  *
+ * // request data once
  * withData(
  *   () => api.getSomeStuff(),
- *   () => false // request data once
+ *   () => false
  * )
  *
  * @example
  *
+ * // Default update behaviour
  * const Comp = withData(() => api.getSomeStuff())(TargetComp)
  *
- * // Update behaviour
  * // Get data on first render
  * <Comp id={1} />
  *
@@ -107,6 +123,23 @@ type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolea
 
 type ShouldDataUpdateFn = (prev: Props, next: Props) => boolean
 
+/**
+ * Merge props with `withData` internal state
+ *
+ * By default:
+ *
+ * ```js
+ * const defaultMergeProps = ({ dataStore, ...props }, state) => ({
+ *   ...props,
+ *   ...(Array.isArray(state.data) ? { data: state.data } : state.data),
+ *   isLoading: props.isLoading || state.isLoading,
+ *   error: state.error || props.error || null
+ * })
+ * ```
+ */
+
+type MergePropsFn = (props: Props, state: State) => Props
+
 type WrappedComponentType = {
   getData?: GetDataFn
 } & $Subtype<ComponentType<any>>
@@ -118,6 +151,7 @@ export type {
   ReactElement,
   GetDataFn,
   ShouldDataUpdateFn,
+  MergePropsFn,
   DataStoreType,
   HOC,
   State,

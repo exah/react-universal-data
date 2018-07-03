@@ -3,11 +3,10 @@
 import type {
   GetDataFn,
   ShouldDataUpdateFn,
+  MergePropsFn,
   DataStoreType,
   WrappedComponentType,
-  HOC,
-  Props,
-  State
+  HOC
 } from './types'
 
 import React, { PureComponent } from 'react'
@@ -36,7 +35,7 @@ const defaultShouldDataUpdate: ShouldDataUpdateFn = (prev, next) => {
   return prev.id !== next.id
 }
 
-const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
+const defaultMergeProps: MergePropsFn = ({ dataStore, ...props }, state) => ({
   ...props,
   ...(Array.isArray(state.data) ? { data: state.data } : state.data),
   isLoading: props.isLoading || state.isLoading,
@@ -95,7 +94,7 @@ const defaultMergeProps = ({ dataStore, ...props }, state): Props => ({
 const withData = (
   getData: GetDataFn,
   shouldDataUpdate: ShouldDataUpdateFn = defaultShouldDataUpdate,
-  mergeProps: (props: Props, state: State) => Props = defaultMergeProps
+  mergeProps: MergePropsFn = defaultMergeProps
 ): HOC => (WrappedComponent: WrappedComponentType) => {
   let id = INITIAL_ID
   let unmountedProps = null

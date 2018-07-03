@@ -17,6 +17,7 @@
         -   [Examples][13]
     -   [ShouldDataUpdateFn][14]
         -   [Examples][15]
+    -   [MergePropsFn][16]
 
 ## withData
 
@@ -28,9 +29,9 @@ const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
 
 ### Parameters
 
--   `getData` **[GetDataFn][16]** — Function that returns promise with props for wrapped component
--   `shouldDataUpdate` **[ShouldDataUpdateFn][17]**  (optional, default `defaultShouldDataUpdate`)
--   `mergeProps` **function (props: Props, state: State): Props**  (optional, default `defaultMergeProps`)
+-   `getData` **[GetDataFn][17]** — Function that returns promise with props for wrapped component
+-   `shouldDataUpdate` **[ShouldDataUpdateFn][18]**  (optional, default `defaultShouldDataUpdate`)
+-   `mergeProps` **[MergePropsFn][19]**  (optional, default `defaultMergeProps`)
 
 ### Examples
 
@@ -71,7 +72,7 @@ class Page extends React.Component {
 export default withData()(Page)
 ```
 
-Returns **HOC** — [Higher-Order Component][18]
+Returns **HOC** — [Higher-Order Component][20]
 
 ## Server-Side Rendering (SSR)
 
@@ -81,12 +82,12 @@ Returns **HOC** — [Higher-Order Component][18]
 ### getAppInitialData
 
 **Server**: Request app data from all `withData` wrapped components
-by walking deep inside React element [`tree`][19].
+by walking deep inside React element [`tree`][21].
 
 #### Parameters
 
 -   `rootElement` **ReactElement&lt;any>** — Your app root React element
--   `serverContext` **[Object][20]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+-   `serverContext` **[Object][22]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
 -   `dataStore` **DataStoreType**  (optional, default `defaultDataStore`)
 
 #### Examples
@@ -127,7 +128,7 @@ export default () => (req, res) => {
 }
 ```
 
-Returns **[Promise][21]&lt;[Object][20]>** 
+Returns **[Promise][23]&lt;[Object][22]>** 
 
 ### hydrateData
 
@@ -136,7 +137,7 @@ Must be used before rendering App root component.
 
 #### Parameters
 
--   `data` **[Object][20]** 
+-   `data` **[Object][22]** 
 
 #### Examples
 
@@ -173,7 +174,7 @@ First argument is **Object** with `isClient`, `isServer` flags, parent component
 If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
 in `getAppInitialData` `false` value will prevent requesting data inside that element tree.
 
-Type: function (context: [Object][20], prevData: [Object][20]): [Promise][21]&lt;({} | \[] | [boolean][22] | null)>
+Type: function (context: [Object][22], prevData: [Object][22]): [Promise][23]&lt;({} | \[] | [boolean][24] | null)>
 
 #### Examples
 
@@ -214,30 +215,46 @@ withData(getData)(Comp)
 
 Function that checks if new data should be requested with `GetDataFn` when recieving new props.
 
-By default it compares [React Router][23] [`match.params`][24], [`location.pathname`][25], `location.search` props for updates. Also you can change `id` prop on component to indicate update.
+By default it compares [React Router][25] [`match.params`][26], [`location.pathname`][27], `location.search` props. Also you can change `id` prop on component to indicate update.
 
-Type: function (prev: Props, next: Props): [boolean][22]
+```js
+const defaultShouldDataUpdate = (prev, next) => {
+  if (prev.match && prev.location) {
+    return !(
+      shallowEqual(prev.match.params, next.match.params) &&
+      prev.location.pathname === next.location.pathname &&
+      prev.location.search === next.location.search
+    )
+  }
+
+  return prev.id !== next.id
+}
+```
+
+Type: function (prev: Props, next: Props): [boolean][24]
 
 #### Examples
 
 ```javascript
+// update data only on lang change
 withData(
   (props) => api.getPage({ slug: props.slug, lang: props.lang }),
-  (prevProps, nextProps) => prevProps.lang !== nextProps.lang // update data only on lang change
+  (prevProps, nextProps) => prevProps.lang !== nextProps.lang
 )
 ```
 
 ```javascript
+// request data once
 withData(
   () => api.getSomeStuff(),
-  () => false // request data once
+  () => false
 )
 ```
 
 ```javascript
+// Default update behaviour
 const Comp = withData(() => api.getSomeStuff())(TargetComp)
 
-// Update behaviour
 // Get data on first render
 <Comp id={1} />
 
@@ -247,6 +264,23 @@ const Comp = withData(() => api.getSomeStuff())(TargetComp)
 // Nothing changed
 <Comp id={2} />
 ```
+
+### MergePropsFn
+
+Merge props with `withData` internal state
+
+By default:
+
+```js
+const defaultMergeProps = ({ dataStore, ...props }, state) => ({
+  ...props,
+  ...(Array.isArray(state.data) ? { data: state.data } : state.data),
+  isLoading: props.isLoading || state.isLoading,
+  error: state.error || props.error || null
+})
+```
+
+Type: function (props: Props, state: State): Props
 
 [1]: #withdata
 
@@ -278,22 +312,26 @@ const Comp = withData(() => api.getSomeStuff())(TargetComp)
 
 [15]: #examples-4
 
-[16]: #getdatafn
+[16]: #mergepropsfn
 
-[17]: #shoulddataupdatefn
+[17]: #getdatafn
 
-[18]: https://reactjs.org/docs/higher-order-components.html
+[18]: #shoulddataupdatefn
 
-[19]: https://github.com/ctrlplusb/react-tree-walker/
+[19]: #mergepropsfn
 
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[20]: https://reactjs.org/docs/higher-order-components.html
 
-[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[21]: https://github.com/ctrlplusb/react-tree-walker/
 
-[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[23]: https://reacttraining.com/react-router
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[24]: https://reacttraining.com/react-router/web/api/match
+[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[25]: https://reacttraining.com/react-router/web/api/location
+[25]: https://reacttraining.com/react-router
+
+[26]: https://reacttraining.com/react-router/web/api/match
+
+[27]: https://reacttraining.com/react-router/web/api/location
