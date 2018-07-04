@@ -11,7 +11,7 @@ toc:
   - name: Optional
     description: |
       `DataStore` customization.
-      Useful only when dealing with multiple `react-get-app-data` instances or when you need to directly access `dataStore` methods.
+      Useful only when dealing with multiple `react-universal-data` instances or when you need to directly access `dataStore` methods.
     children:
       - createDataStore
       - DataProvider

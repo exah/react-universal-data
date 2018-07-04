@@ -70,7 +70,7 @@ const defaultMergeProps: MergePropsFn = ({ dataStore, ...props }, state) => ({
  *
  * @example
  *
- * import { withData } from 'react-get-app-data'
+ * import { withData } from 'react-universal-data'
  *
  * const Page = ({ message }) => (
  *   <div>
@@ -85,7 +85,7 @@ const defaultMergeProps: MergePropsFn = ({ dataStore, ...props }, state) => ({
  * @example
  *
  * import React from 'react'
- * import { withData } from 'react-get-app-data'
+ * import { withData } from 'react-universal-data'
  *
  * class Page extends React.Component {
  *   // Same as `withData` first argument

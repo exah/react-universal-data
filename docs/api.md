@@ -65,7 +65,7 @@ const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
 ```
 
 ```javascript
-import { withData } from 'react-get-app-data'
+import { withData } from 'react-universal-data'
 
 const Page = ({ message }) => (
   <div>
@@ -80,7 +80,7 @@ export default withData((contextAndProps, prevData) =>
 
 ```javascript
 import React from 'react'
-import { withData } from 'react-get-app-data'
+import { withData } from 'react-universal-data'
 
 class Page extends React.Component {
   // Same as `withData` first argument
@@ -124,7 +124,7 @@ by walking deep inside React element [`tree`][31].
 ```javascript
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { getInitialData } from 'react-get-app-data'
+import { getInitialData } from 'react-universal-data'
 import { html } from 'common-tags'
 
 import App from './app'
@@ -173,7 +173,7 @@ Must be used before rendering App root component.
 ```javascript
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { hydrateData } from 'react-get-app-data'
+import { hydrateData } from 'react-universal-data'
 import App from './app'
 
 // Get server state
@@ -193,7 +193,7 @@ Returns **void**
 ## Optional
 
 `DataStore` customization.
-Useful only when dealing with multiple `react-get-app-data` instances or when you need to directly access `dataStore` methods.
+Useful only when dealing with multiple `react-universal-data` instances or when you need to directly access `dataStore` methods.
 
 
 ### createDataStore
@@ -211,7 +211,7 @@ Create custom `dataStore`, that can be provided to [DataProvider][18] and [getIn
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createDataStore, DataProvider } from 'react-get-app-data'
+import { createDataStore, DataProvider } from 'react-universal-data'
 import App from './app'
 
 const { initialData } = (window._ssr || {})
@@ -231,7 +231,7 @@ ReactDOM.render((
 import { html } from 'common-tags'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { getInitialData, createDataStore, DataProvider } from 'react-get-app-data'
+import { getInitialData, createDataStore, DataProvider } from 'react-universal-data'
 import App from './app'
 
 export default () => (req, res) => {
@@ -278,7 +278,7 @@ Provides `dataStore` created with [createDataStore][15] to [withData][2] compone
 
 ```javascript
 import React from 'react'
-import { createDataStore, DataProvider } from 'react-get-app-data'
+import { createDataStore, DataProvider } from 'react-universal-data'
 import App from './app'
 
 const appElement = (

@@ -1,4 +1,4 @@
-# 🗂 react-get-app-data
+# 🗂 react-universal-data
 
 > Simple HOC and utils for getting initial and subsequent async data inside React components
 
@@ -11,7 +11,7 @@
 ## Install
 
 ```sh
-$ yarn add react-get-app-data
+$ yarn add react-universal-data
 ```
 
 ## [API](./docs/api.md)
@@ -25,7 +25,7 @@ Inside `withData` HOC
 import 'isomorphic-fetch'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { withData } from 'react-get-app-data'
+import { withData } from 'react-universal-data'
 
 const Page = ({ user = {} }) => <div>Hello {user.name}!</div>
 
@@ -48,7 +48,7 @@ Or with static `getData` prop inside React Component
 import 'isomorphic-fetch'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { withData } from 'react-get-app-data'
+import { withData } from 'react-universal-data'
 
 class Page extends React.Component {
   static defaultProps = {
@@ -88,7 +88,7 @@ With two-step rendering on server
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { getInitialData } from 'react-get-app-data'
+import { getInitialData } from 'react-universal-data'
 import { html } from 'common-tags'
 import App from './app'
 
@@ -127,7 +127,7 @@ Hydrate `App` and `initialData` in client
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { hydrateData } from 'react-get-app-data'
+import { hydrateData } from 'react-universal-data'
 import App from './app'
 
 // Get server state

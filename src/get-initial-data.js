@@ -19,7 +19,7 @@ import { defaultDataStore } from './data-store'
  *
  * import React from 'react'
  * import { renderToString } from 'react-dom/server'
- * import { getInitialData } from 'react-get-app-data'
+ * import { getInitialData } from 'react-universal-data'
  * import { html } from 'common-tags'
  *
  * import App from './app'

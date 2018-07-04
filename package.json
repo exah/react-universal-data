@@ -1,10 +1,10 @@
 {
-  "name": "react-get-app-data",
+  "name": "react-universal-data",
   "version": "1.1.1",
   "description": "Simple React HOC for getting async data + SSR",
   "author": "John Grishin <hi@johngrish.in>",
   "license": "MIT",
-  "repository": "exah/react-get-app-data",
+  "repository": "exah/react-universal-data",
   "sideEffects": false,
   "main": "cjs/index.js",
   "module": "esm/index.js",

@@ -13,7 +13,7 @@ import { defaultDataStore } from './data-store'
  * @example
  *
  * import React from 'react'
- * import { createDataStore, DataProvider } from 'react-get-app-data'
+ * import { createDataStore, DataProvider } from 'react-universal-data'
  * import App from './app'
  *
  * const appElement = (

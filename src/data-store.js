@@ -11,7 +11,7 @@ import { INITIAL_ID } from './constants'
  *
  * import React from 'react'
  * import ReactDOM from 'react-dom'
- * import { createDataStore, DataProvider } from 'react-get-app-data'
+ * import { createDataStore, DataProvider } from 'react-universal-data'
  * import App from './app'
  *
  * const { initialData } = (window._ssr || {})
@@ -31,7 +31,7 @@ import { INITIAL_ID } from './constants'
  * import { html } from 'common-tags'
  * import React from 'react'
  * import { renderToString } from 'react-dom/server'
- * import { getInitialData, createDataStore, DataProvider } from 'react-get-app-data'
+ * import { getInitialData, createDataStore, DataProvider } from 'react-universal-data'
  * import App from './app'
  *
  * export default () => (req, res) => {
@@ -95,7 +95,7 @@ const defaultDataStore = createDataStore()
  *
  * import React from 'react'
  * import ReactDOM from 'react-dom'
- * import { hydrateData } from 'react-get-app-data'
+ * import { hydrateData } from 'react-universal-data'
  * import App from './app'
  *
  * // Get server state
