@@ -1,9 +1,20 @@
 toc:
-  - withData
+  - name: Getting Data
+    children:
+      - withData
+
   - name: Server-Side Rendering (SSR)
     children:
       - getInitialData
       - hydrateData
+
+  - name: Optional
+    description: |
+      `DataStore` customization.
+      Useful only when dealing with multiple `react-get-app-data` instances or when you need to directly access `dataStore` methods.
+    children:
+      - createDataStore
+      - DataProvider
 
   - name: Types
     children:

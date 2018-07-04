@@ -2,48 +2,67 @@
 
 ### Table of Contents
 
--   [withData][1]
-    -   [Target Component props][2]
-    -   [Parameters][3]
-    -   [Examples][4]
--   [Server-Side Rendering (SSR)][5]
-    -   [getInitialData][6]
-        -   [Parameters][7]
-        -   [Examples][8]
-    -   [hydrateData][9]
-        -   [Parameters][10]
-        -   [Examples][11]
--   [Types][12]
-    -   [GetDataFn][13]
-        -   [Examples][14]
-    -   [ShouldDataUpdateFn][15]
-        -   [Examples][16]
-    -   [MergePropsFn][17]
+-   [Getting Data][1]
+    -   [withData][2]
+        -   [Props][3]
+        -   [Provided props][4]
+        -   [Parameters][5]
+        -   [Examples][6]
+-   [Server-Side Rendering (SSR)][7]
+    -   [getInitialData][8]
+        -   [Parameters][9]
+        -   [Examples][10]
+    -   [hydrateData][11]
+        -   [Parameters][12]
+        -   [Examples][13]
+-   [Optional][14]
+    -   [createDataStore][15]
+        -   [Parameters][16]
+        -   [Examples][17]
+    -   [DataProvider][18]
+        -   [Props][19]
+        -   [Examples][20]
+-   [Types][21]
+    -   [GetDataFn][22]
+        -   [Examples][23]
+    -   [ShouldDataUpdateFn][24]
+        -   [Examples][25]
+    -   [MergePropsFn][26]
 
-## withData
+## Getting Data
+
+
+
+
+### withData
 
 Higher-Order Component for getting async data for initial component props and in subsequent updates.
 
-```js
+#### Props
+
+-   Anything required for your [GetDataFn][22] or custom [ShouldDataUpdateFn][24]
+
+#### Provided props
+
+-   `...props` — All props passed to `withData` from parent
+-   `isLoading: boolean` — Status of `getData` promise (server: `false`)
+-   `error: Error | null` — Error rejected with promise (server: `null`) <br>
+    On server you may want to return custom `{ error }` inside `Promise.catch` to show errors inside component. Otherwise component will try to request data again on client after mount.
+-   `...result` — Everything returned in `getData` will be passed as props
+
+See [GetDataFn][22] and [MergePropsFn][26].
+
+#### Parameters
+
+-   `getData` **[GetDataFn][27]** — Function that returns promise with props for wrapped component
+-   `shouldDataUpdate` **[ShouldDataUpdateFn][28]**  (optional, default `defaultShouldDataUpdate`)
+-   `mergeProps` **[MergePropsFn][29]**  (optional, default `defaultMergeProps`)
+
+#### Examples
+
+```javascript
 const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
 ```
-
-### Target Component props
-
-Is combined result of [GetDataFn][13] and [MergePropsFn][17].
-
--   `isLoading: boolean` — Status of `getData` promise (client)
--   `error: Error | null` — Error rejected with promise (usually on client) <br>
-    On server you need to return custom `{ error }` inside `Promise.catch` to show errors in component or handle them in `getInitialData.catch`. Otherwise component will try to request data again on client after mount.
--   `...getDataResult` — Everything returned in `getData` will be passed as props
-
-### Parameters
-
--   `getData` **[GetDataFn][18]** — Function that returns promise with props for wrapped component
--   `shouldDataUpdate` **[ShouldDataUpdateFn][19]**  (optional, default `defaultShouldDataUpdate`)
--   `mergeProps` **[MergePropsFn][20]**  (optional, default `defaultMergeProps`)
-
-### Examples
 
 ```javascript
 import { withData } from 'react-get-app-data'
@@ -82,7 +101,7 @@ class Page extends React.Component {
 export default withData()(Page)
 ```
 
-Returns **HOC** — [Higher-Order Component][21]
+Returns **HOC** — [Higher-Order Component][30]
 
 ## Server-Side Rendering (SSR)
 
@@ -92,12 +111,12 @@ Returns **HOC** — [Higher-Order Component][21]
 ### getInitialData
 
 **Server**: Request app data from all `withData` wrapped components
-by walking deep inside React element [`tree`][22].
+by walking deep inside React element [`tree`][31].
 
 #### Parameters
 
 -   `rootElement` **ReactElement&lt;any>** — Your app root React element
--   `serverContext` **[Object][23]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
+-   `serverContext` **[Object][32]** — Can be used to provide additional data to `GetDataFn` (like `req`, `res` from an `express` middleware).
 -   `dataStore` **DataStoreType**  (optional, default `defaultDataStore`)
 
 #### Examples
@@ -138,7 +157,7 @@ export default () => (req, res) => {
 }
 ```
 
-Returns **[Promise][24]&lt;[Object][23]>** 
+Returns **[Promise][33]&lt;[Object][32]>** 
 
 ### hydrateData
 
@@ -147,7 +166,7 @@ Must be used before rendering App root component.
 
 #### Parameters
 
--   `data` **[Object][23]** 
+-   `data` **[Object][32]** 
 
 #### Examples
 
@@ -171,6 +190,104 @@ ReactDOM.hydrate((
 
 Returns **void** 
 
+## Optional
+
+`DataStore` customization.
+Useful only when dealing with multiple `react-get-app-data` instances or when you need to directly access `dataStore` methods.
+
+
+### createDataStore
+
+Create custom `dataStore`, that can be provided to [DataProvider][18] and [getInitialData][8].
+
+#### Parameters
+
+-   `initialData` **[Object][32]**  (optional, default `{}`)
+
+#### Examples
+
+```javascript
+// client.js
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { createDataStore, DataProvider } from 'react-get-app-data'
+import App from './app'
+
+const { initialData } = (window._ssr || {})
+
+const myDataStore = createDataStore(intialData)
+
+ReactDOM.render((
+  <DataProvider value={myDataStore}>
+    <App />
+  </DataProvider>
+), document.getElementById('app'))
+```
+
+```javascript
+// server.js
+
+import { html } from 'common-tags'
+import React from 'react'
+import { renderToString } from 'react-dom/server'
+import { getInitialData, createDataStore, DataProvider } from 'react-get-app-data'
+import App from './app'
+
+export default () => (req, res) => {
+  const myDataStore = createDataStore()
+
+  const appElement = (
+    <DataProvider value={myDataStore}>
+      <App />
+    </DataProvider>
+  )
+
+  getInitialData(appElement, { req, res }, myDataStore)
+    .then((initialData) => {
+      res.send(html`
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <div id="app">${renderToString(appElement)}</div>
+            <script>
+              (function () {
+                window._ssr = ${JSON.stringify({ initialData })};
+              })();
+            </script>
+            <script src="/client.js"></script>
+          </body>
+        </html>
+      `)
+    })
+    .catch() // Somehow handle errors
+}
+```
+
+Returns **DataStoreType** 
+
+### DataProvider
+
+Provides `dataStore` created with [createDataStore][15] to [withData][2] components using [React Context][34].
+
+#### Props
+
+-   `value` **DataStoreType**
+
+#### Examples
+
+```javascript
+import React from 'react'
+import { createDataStore, DataProvider } from 'react-get-app-data'
+import App from './app'
+
+const appElement = (
+  <DataProvider value={createDataStore()}>
+    <App />
+  </DataProvider>
+)
+```
+
 ## Types
 
 
@@ -184,7 +301,7 @@ First argument is **Object** with `isClient`, `isServer` flags, parent component
 If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
 in `getInitialData` `false` value will prevent requesting data inside that element tree.
 
-Type: function (context: [Object][23], prevData: [Object][23]): [Promise][24]&lt;({} | \[] | [boolean][25] | null)>
+Type: function (context: [Object][32], prevData: [Object][32]): [Promise][33]&lt;({} | \[] | [boolean][35] | null)>
 
 #### Examples
 
@@ -223,9 +340,9 @@ withData(getData)(Comp)
 
 ### ShouldDataUpdateFn
 
-Function that checks if new data should be requested with `GetDataFn` when recieving new props.
+Function that checks if new data should be requested with `GetDataFn` when receiving new props.
 
-By default it compares [React Router][26] [`match.params`][27], [`location.pathname`][28], `location.search` props. Also you can change `id` prop on component to indicate update.
+By default it compares [React Router][36] [`match.params`][37], [`location.pathname`][38], `location.search` props. Also you can change `id` prop on component to indicate update.
 
 ```js
 const defaultShouldDataUpdate = (prev, next) => {
@@ -241,7 +358,7 @@ const defaultShouldDataUpdate = (prev, next) => {
 }
 ```
 
-Type: function (prev: Props, next: Props): [boolean][25]
+Type: function (prev: Props, next: Props): [boolean][35]
 
 #### Examples
 
@@ -277,7 +394,7 @@ const Comp = withData(() => api.getSomeStuff())(TargetComp)
 
 ### MergePropsFn
 
-Merge props with `withData` internal state
+Merge parent props with `withData` internal state.
 
 By default:
 
@@ -292,58 +409,78 @@ const defaultMergeProps = ({ dataStore, ...props }, state) => ({
 
 Type: function (props: Props, state: State): Props
 
-[1]: #withdata
+[1]: #getting-data
 
-[2]: #target-component-props
+[2]: #withdata
 
-[3]: #parameters
+[3]: #props
 
-[4]: #examples
+[4]: #provided-props
 
-[5]: #server-side-rendering-ssr
+[5]: #parameters
 
-[6]: #getinitialdata
+[6]: #examples
 
-[7]: #parameters-1
+[7]: #server-side-rendering-ssr
 
-[8]: #examples-1
+[8]: #getinitialdata
 
-[9]: #hydratedata
+[9]: #parameters-1
 
-[10]: #parameters-2
+[10]: #examples-1
 
-[11]: #examples-2
+[11]: #hydratedata
 
-[12]: #types
+[12]: #parameters-2
 
-[13]: #getdatafn
+[13]: #examples-2
 
-[14]: #examples-3
+[14]: #optional
 
-[15]: #shoulddataupdatefn
+[15]: #createdatastore
 
-[16]: #examples-4
+[16]: #parameters-3
 
-[17]: #mergepropsfn
+[17]: #examples-3
 
-[18]: #getdatafn
+[18]: #dataprovider
 
-[19]: #shoulddataupdatefn
+[19]: #props-1
 
-[20]: #mergepropsfn
+[20]: #examples-4
 
-[21]: https://reactjs.org/docs/higher-order-components.html
+[21]: #types
 
-[22]: https://github.com/ctrlplusb/react-tree-walker/
+[22]: #getdatafn
 
-[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[23]: #examples-5
 
-[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[24]: #shoulddataupdatefn
 
-[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[25]: #examples-6
 
-[26]: https://reacttraining.com/react-router
+[26]: #mergepropsfn
 
-[27]: https://reacttraining.com/react-router/web/api/match
+[27]: #getdatafn
 
-[28]: https://reacttraining.com/react-router/web/api/location
+[28]: #shoulddataupdatefn
+
+[29]: #mergepropsfn
+
+[30]: https://reactjs.org/docs/higher-order-components.html
+
+[31]: https://github.com/ctrlplusb/react-tree-walker/
+
+[32]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[33]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[34]: http://reactjs.org/docs/context.html
+
+[35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[36]: https://reacttraining.com/react-router
+
+[37]: https://reacttraining.com/react-router/web/api/match
+
+[38]: https://reacttraining.com/react-router/web/api/location

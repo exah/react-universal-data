@@ -45,22 +45,28 @@ const defaultMergeProps: MergePropsFn = ({ dataStore, ...props }, state) => ({
 /**
  * Higher-Order Component for getting async data for initial component props and in subsequent updates.
  *
- * ```js
- * const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
- * ```
+ * #### Props
  *
- * ### Target Component props
+ * - Anything required for your {@link GetDataFn} or custom {@link ShouldDataUpdateFn}
  *
- * Is combined result of {@link GetDataFn} and {@link MergePropsFn}.
+ * #### Provided props
  *
- * - `isLoading: boolean` — Status of `getData` promise (client)
- * - `error: Error | null` — Error rejected with promise (usually on client) <br>
- *   On server you need to return custom `{ error }` inside `Promise.catch` to show errors in component or handle them in `getInitialData.catch`. Otherwise component will try to request data again on client after mount.
- * - `...getDataResult` — Everything returned in `getData` will be passed as props
+ * - `...props` — All props passed to `withData` from parent
+ * - `isLoading: boolean` — Status of `getData` promise (server: `false`)
+ * - `error: Error | null` — Error rejected with promise (server: `null`) <br>
+ *   On server you may want to return custom `{ error }` inside `Promise.catch` to show errors inside component. Otherwise component will try to request data again on client after mount.
+ * - `...result` — Everything returned in `getData` will be passed as props
+ *
+ * See {@link GetDataFn} and {@link MergePropsFn}.
  *
  * @param getData — Function that returns promise with props for wrapped component
  *
  * @return — [Higher-Order Component](https://reactjs.org/docs/higher-order-components.html)
+ *
+ * @example
+ *
+ * const Comp = withData(getData?, shouldDataUpdate?, mergeProps?)(TargetComp)
+ *
  *
  * @example
  *

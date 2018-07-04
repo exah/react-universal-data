@@ -72,7 +72,7 @@ type Props = $Shape<{
 type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolean | null>
 
 /**
- * Function that checks if new data should be requested with `GetDataFn` when recieving new props.
+ * Function that checks if new data should be requested with `GetDataFn` when receiving new props.
  *
  * By default it compares [React Router](https://reacttraining.com/react-router) [`match.params`](https://reacttraining.com/react-router/web/api/match), [`location.pathname`](https://reacttraining.com/react-router/web/api/location), `location.search` props. Also you can change `id` prop on component to indicate update.
  *
@@ -124,7 +124,7 @@ type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolea
 type ShouldDataUpdateFn = (prev: Props, next: Props) => boolean
 
 /**
- * Merge props with `withData` internal state
+ * Merge parent props with `withData` internal state.
  *
  * By default:
  *
