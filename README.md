@@ -1,6 +1,12 @@
 # 🗂 react-get-app-data
 
-> Simple React HOC for getting intial and subsequent async data + SSR
+> Simple HOC and utils for getting initial and subsequent async data inside React components
+
+- [x] Promise based
+- [x] Request data inside HOC or React Component `getData` static prop
+- [x] Simple server-side rendering & client state restoration
+- [x] Can handle updates
+- [ ] React-Redux support (coming in 🔖 3.x)
 
 ## Install
 
@@ -12,7 +18,7 @@ $ yarn add react-get-app-data
 
 ## Example
 
-As HOC
+Inside `withData` HOC
 
 
 ```js
@@ -36,7 +42,7 @@ ReactDOM.render(<PageWithData />, document.getElementById('root'))
 
 ---
 
-Or as static property inside component
+Or with static `getData` prop inside React Component
 
 ```js
 import 'isomorphic-fetch'
@@ -71,10 +77,9 @@ ReactDOM.render(<PageWithData />, document.getElementById('root'))
 
 [![Edit ovxkz1ojj9](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ovxkz1ojj9)
 
+---
 
 ### Server-Side Rendering
-
-<details>
   
 With two-step rendering on server
 
@@ -92,13 +97,11 @@ export default () => (req, res) => {
 
   getInitialData(appElement)
     .then((initialData) => {
-      const app = renderToString(appElement)
-
       res.send(html`
         <!DOCTYPE html>
         <html>
           <body>
-            <div id="app">${app}</div>
+            <div id="app">${renderToString(appElement)}</div>
             <script>
               (function () {
                 window._ssr = ${JSON.stringify({ initialData })};
@@ -117,7 +120,7 @@ export default () => (req, res) => {
 }
 ```
 
-Hydrate app and initialData in client
+Hydrate `App` and `initialData` in client
 
 ```js
 // client.js
@@ -139,9 +142,8 @@ ReactDOM.hydrate((
 ), document.getElementById('app'))
 ```
 
-</details>
 
-## Related
+## Links
 
 - [react-tree-walker](https://github.com/ctrlplusb/react-tree-walker) - inside `getInitialData`
 - [webpack-hot-server-middleware](https://www.npmjs.com/package/webpack-hot-server-middleware) - server-side entry for webpack
