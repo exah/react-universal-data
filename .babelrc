@@ -8,12 +8,16 @@
   },
   "presets": [
     "flow",
-    [ "env", { "modules": false } ]
+    [ "env", {
+      "modules": false,
+      "useBuiltIns": true,
+      "loose": true,
+      "exclude": [ "transform-regenerator" ]
+    } ]
   ],
   "plugins": [
     "transform-react-jsx",
     "transform-class-properties",
-    [ "transform-runtime", { "helpers": true, "polyfill": false } ],
     [ "transform-object-rest-spread", { "useBuiltIns": true } ]
   ]
 }
