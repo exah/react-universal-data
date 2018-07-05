@@ -147,7 +147,7 @@ const withData = (
 
       if (this.dataId === INITIAL_ID || (
         this.unmountedProps !== null &&
-        shouldDataUpdate(this.unmountedProps, props)
+        shouldDataUpdate(this.unmountedProps, props, true)
       )) {
         this.dataId = props.dataStore.nextId()
       }
@@ -195,7 +195,7 @@ const withData = (
       }
     }
     componentDidUpdate (prevProps) {
-      if (shouldDataUpdate(prevProps, this.props)) {
+      if (shouldDataUpdate(prevProps, this.props, false)) {
         this.getData()
       }
     }

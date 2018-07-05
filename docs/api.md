@@ -301,7 +301,7 @@ First argument is **Object** with `isClient`, `isServer` flags, parent component
 If returned value is `false`, `null` or `undefined`, component will use previous data in state, also
 in `getInitialData` `false` value will prevent requesting data inside that element tree.
 
-Type: function (context: [Object][32], prevData: [Object][32]): [Promise][33]&lt;({} | \[] | [boolean][35] | null)>
+Type: function (context: [Object][32], prevData: [Object][32]): [Promise][33]&lt;({} | [Array][35]&lt;any> | [boolean][36] | null)>
 
 #### Examples
 
@@ -342,23 +342,23 @@ withData(getData)(Comp)
 
 Function that checks if new data should be requested with `GetDataFn` when receiving new props.
 
-By default it compares [React Router][36] [`match.params`][37], [`location.pathname`][38], `location.search` props. Also you can change `id` prop on component to indicate update.
+By default it compares [React Router][37] [`match.params`][38], [`location.pathname`][39], `location.search` props. Also you can change `id` prop on component to indicate update.
 
 ```js
-const defaultShouldDataUpdate = (prev, next) => {
-  if (prev.match && prev.location) {
+const defaultShouldDataUpdate = (prevProps, nextProps) => {
+  if (prevProps.match && prevProps.location) {
     return !(
-      shallowEqual(prev.match.params, next.match.params) &&
-      prev.location.pathname === next.location.pathname &&
-      prev.location.search === next.location.search
+      shallowEqual(prevProps.match.params, nextProps.match.params) &&
+      prevProps.location.pathname === nextProps.location.pathname &&
+      prevProps.location.search === nextProps.location.search
     )
   }
 
-  return prev.id !== next.id
+  return prevProps.id !== nextProps.id
 }
 ```
 
-Type: function (prev: Props, next: Props): [boolean][35]
+Type: function (prev: Props, next: Props, isUnmounted: [boolean][36]): [boolean][36]
 
 #### Examples
 
@@ -390,6 +390,14 @@ const Comp = withData(() => api.getSomeStuff())(TargetComp)
 
 // Nothing changed
 <Comp id={2} />
+```
+
+```javascript
+// Do not restore data after rendering component previously unmounted
+withData(
+  () => api.getSomeStuff(),
+  (prev, next, isUnmounted) => isUnmounted
+)
 ```
 
 ### MergePropsFn
@@ -477,10 +485,12 @@ Type: function (props: Props, state: State): Props
 
 [34]: http://reactjs.org/docs/context.html
 
-[35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[36]: https://reacttraining.com/react-router
+[36]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[37]: https://reacttraining.com/react-router/web/api/match
+[37]: https://reacttraining.com/react-router
 
-[38]: https://reacttraining.com/react-router/web/api/location
+[38]: https://reacttraining.com/react-router/web/api/match
+
+[39]: https://reacttraining.com/react-router/web/api/location

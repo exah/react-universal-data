@@ -5,18 +5,20 @@ import type {
   Element as ReactElement
 } from 'react'
 
+type StateData = ? {} | Array<any>
+
 type DataStoreType = {
   init: (value?: Object) => void,
-  save: (id: number, value: any) => void,
+  save: (id: number, value: StateData) => void,
   nextId: () => number,
-  getById: (id: number) => any,
+  getById: (id: number) => StateData,
   get: () => Object
 }
 
 type State = {
   isLoading: boolean,
   error: Error | null,
-  data: any
+  data: StateData
 }
 
 type Props = $Shape<{
@@ -69,7 +71,7 @@ type Props = $Shape<{
  * // Comp props -> { data: [ 1, 2, 3, 4 ] }
  */
 
-type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolean | null>
+type GetDataFn = (context: Object, prevData: Object) => Promise<{} | Array<any> | boolean | null>
 
 /**
  * Function that checks if new data should be requested with `GetDataFn` when receiving new props.
@@ -77,16 +79,16 @@ type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolea
  * By default it compares [React Router](https://reacttraining.com/react-router) [`match.params`](https://reacttraining.com/react-router/web/api/match), [`location.pathname`](https://reacttraining.com/react-router/web/api/location), `location.search` props. Also you can change `id` prop on component to indicate update.
  *
  * ```js
- * const defaultShouldDataUpdate = (prev, next) => {
- *   if (prev.match && prev.location) {
+ * const defaultShouldDataUpdate = (prevProps, nextProps) => {
+ *   if (prevProps.match && prevProps.location) {
  *     return !(
- *       shallowEqual(prev.match.params, next.match.params) &&
- *       prev.location.pathname === next.location.pathname &&
- *       prev.location.search === next.location.search
+ *       shallowEqual(prevProps.match.params, nextProps.match.params) &&
+ *       prevProps.location.pathname === nextProps.location.pathname &&
+ *       prevProps.location.search === nextProps.location.search
  *     )
  *   }
  *
- *   return prev.id !== next.id
+ *   return prevProps.id !== nextProps.id
  * }
  * ```
  *
@@ -119,9 +121,17 @@ type GetDataFn = (context: Object, prevData: Object) => Promise<{} | [] | boolea
  *
  * // Nothing changed
  * <Comp id={2} />
+ *
+ * @example
+ *
+ * // Do not restore data after rendering component previously unmounted
+ * withData(
+ *   () => api.getSomeStuff(),
+ *   (prev, next, isUnmounted) => isUnmounted
+ * )
  */
 
-type ShouldDataUpdateFn = (prev: Props, next: Props) => boolean
+type ShouldDataUpdateFn = (prev: Props, next: Props, isUnmounted: boolean) => boolean
 
 /**
  * Merge parent props with `withData` internal state.
