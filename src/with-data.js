@@ -111,12 +111,9 @@ const withData = (
   shouldDataUpdate: ShouldDataUpdateFn = defaultShouldDataUpdate,
   mergeProps: MergePropsFn = defaultMergeProps
 ): HOC => (WrappedComponent: WrappedComponentType) => {
-  let id = INITIAL_ID
-  let unmountedProps = null
-
   const getDataPromise = getData || WrappedComponent.getData || defaultGetData
 
-  const getDataHandler = (context, prevData) => {
+  const getDataHandler = (context, prevData, id) => {
     const promise = getDataPromise({
       isClient: IS_CLIENT,
       isServer: IS_SERVER,
@@ -143,49 +140,57 @@ const withData = (
         getById: PropTypes.func.isRequired
       })
     }
+    dataId = INITIAL_ID
+    unmountedProps = null
     constructor (props) {
       super(props)
 
-      if (
-        id !== INITIAL_ID &&
-        unmountedProps != null &&
-        shouldDataUpdate(unmountedProps, props)
-      ) {
-        id = INITIAL_ID
-      }
-
-      if (!id) {
-        id = props.dataStore.nextId()
+      if (this.dataId === INITIAL_ID || (
+        this.unmountedProps !== null &&
+        shouldDataUpdate(this.unmountedProps, props)
+      )) {
+        this.dataId = props.dataStore.nextId()
       }
 
       this.state = {
         isLoading: false,
         error: null,
-        data: props.dataStore.getById(id)
+        data: props.dataStore.getById(this.dataId)
       }
+
+      this.unmountedProps = null
     }
     _handleRequest = (requestPromise) => {
       this.setState({ isLoading: true })
 
       requestPromise
-        .then((data) => data && this.setState({ data }))
-        .catch((error) => this.setState({ error }))
-        .then(() => this.setState({ isLoading: false }))
+        .then((data) => data ? { data } : null)
+        .catch((error) => ({ error }))
+        .then((nextState) => {
+          if (this.unmountedProps === null) {
+            this.setState({
+              ...nextState,
+              isLoading: false
+            })
+          }
+        })
 
       return requestPromise
     }
     getInitialData = (serverContext) => getDataHandler(
       { ...serverContext, ...this.props },
-      this.state.data
+      this.state.data,
+      this.dataId
     )
     getData = () => this._handleRequest(
       getDataHandler(
         this.props,
-        this.state.data
+        this.state.data,
+        this.dataId
       )
     )
     componentDidMount () {
-      if (this.props.dataStore.getById(id) == null) {
+      if (this.props.dataStore.getById(this.dataId) == null) {
         this.getData()
       }
     }
@@ -195,7 +200,7 @@ const withData = (
       }
     }
     componentWillUnmount () {
-      unmountedProps = this.props
+      this.unmountedProps = this.props
     }
     render () {
       return (
