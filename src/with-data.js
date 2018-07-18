@@ -112,7 +112,7 @@ const withData = (
   mergeProps: MergePropsFn = defaultMergeProps
 ): HOC => (WrappedComponent: WrappedComponentType) => {
   let dataId = INITIAL_ID
-  let unmountedProps = null
+  let savedProps = null
 
   const getDataPromise = getData || WrappedComponent.getData || defaultGetData
 
@@ -129,6 +129,7 @@ const withData = (
   }
 
   class Data extends PureComponent<any, any> {
+    isRequestCancelled: boolean
     static displayName = wrapDisplayName(
       WrappedComponent,
       'withData'
@@ -146,11 +147,13 @@ const withData = (
     constructor (props) {
       super(props)
 
-      if (dataId === INITIAL_ID || (
-        unmountedProps !== null &&
-        shouldDataUpdate(unmountedProps, props, true)
-      )) {
+      if (dataId === INITIAL_ID) {
         dataId = props.dataStore.nextId()
+      } else if (
+        savedProps !== null &&
+        shouldDataUpdate(savedProps, props, true)
+      ) {
+        props.dataStore.save(dataId, null)
       }
 
       this.state = {
@@ -159,16 +162,19 @@ const withData = (
         data: props.dataStore.getById(dataId)
       }
 
-      unmountedProps = null
+      savedProps = null
     }
     _handleRequest = (requestPromise) => {
+      this.isRequestCancelled = false
       this.setState({ isLoading: true })
 
       requestPromise
         .then((data) => data ? { data } : null)
         .catch((error) => ({ error }))
         .then((nextState) => {
-          if (unmountedProps === null) {
+          if (this.isRequestCancelled === false) {
+            savedProps = { ...this.props }
+
             this.setState({
               ...nextState,
               isLoading: false
@@ -177,6 +183,9 @@ const withData = (
         })
 
       return requestPromise
+    }
+    _cancelRequest = () => {
+      this.isRequestCancelled = true
     }
     getInitialData = (serverContext) => getDataHandler(
       { ...serverContext, ...this.props },
@@ -199,7 +208,7 @@ const withData = (
       }
     }
     componentWillUnmount () {
-      unmountedProps = this.props
+      this._cancelRequest()
     }
     render () {
       return (
