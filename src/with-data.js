@@ -119,14 +119,19 @@ const withData = (
 
   const getDataPromise = getData || WrappedComponent.getData || defaultGetData
 
-  const getDataHandler = (context, prevData) => {
+  const getDataHandler = (props, prevData, serverContext) => {
     const promise = getDataPromise({
       isClient: IS_CLIENT,
       isServer: IS_SERVER,
-      ...context
+      ...serverContext,
+      ...props
     }, prevData)
 
-    promise.then((data) => data && context.dataStore.save(dataId, data))
+    promise.then((data) => {
+      if (data) {
+        props.dataStore.save(dataId, data)
+      }
+    })
 
     return promise
   }
@@ -149,7 +154,7 @@ const withData = (
       if (dataId === INITIAL_ID) {
         dataId = props.dataStore.nextId()
       } else if (
-        savedProps !== null &&
+        savedProps === null ||
         shouldDataUpdate(savedProps, props, true)
       ) {
         props.dataStore.save(dataId, null)
@@ -161,7 +166,7 @@ const withData = (
         data: props.dataStore.getById(dataId)
       }
 
-      savedProps = null
+      savedProps = { ...props }
     }
     _handleRequest = (requestPromise) => {
       this.isRequestCancelled = false
@@ -172,8 +177,6 @@ const withData = (
         .catch((error) => ({ error }))
         .then((nextState) => {
           if (this.isRequestCancelled === false) {
-            savedProps = { ...this.props }
-
             this.setState({
               ...nextState,
               isLoading: false
@@ -187,8 +190,9 @@ const withData = (
       this.isRequestCancelled = true
     }
     getInitialData = (serverContext) => getDataHandler(
-      { ...serverContext, ...this.props },
-      this.state.data
+      this.props,
+      this.state.data,
+      serverContext
     )
     getData = () => this._handleRequest(
       getDataHandler(
@@ -197,12 +201,13 @@ const withData = (
       )
     )
     componentDidMount () {
-      if (this.props.dataStore.getById(dataId) == null) {
+      if (this.state.data == null) {
         this.getData()
       }
     }
     componentDidUpdate (prevProps) {
       if (shouldDataUpdate(prevProps, this.props, false)) {
+        savedProps = { ...this.props }
         this.getData()
       }
     }
