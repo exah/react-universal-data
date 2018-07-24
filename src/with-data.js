@@ -9,8 +9,11 @@ import type {
   HOC
 } from './types'
 
+import {
+  dataStoreShapePropType
+} from './types'
+
 import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
 import { shallowEqual, wrapDisplayName } from 'recompose'
 import { DataConsumer } from './context'
 import { defaultDataStore } from './data-store'
@@ -138,11 +141,7 @@ const withData = (
       dataStore: defaultDataStore
     }
     static propTypes = {
-      dataStore: PropTypes.shape({
-        save: PropTypes.func.isRequired,
-        nextId: PropTypes.func.isRequired,
-        getById: PropTypes.func.isRequired
-      })
+      dataStore: dataStoreShapePropType
     }
     constructor (props) {
       super(props)

@@ -1,5 +1,7 @@
 // @flow
 
+import PropTypes from 'prop-types'
+
 import type {
   ComponentType,
   Element as ReactElement
@@ -14,6 +16,14 @@ type DataStoreType = {
   getById: (id: number) => StateData,
   get: () => Object
 }
+
+const dataStoreShapePropType = PropTypes.shape({
+  init: PropTypes.func.isRequired,
+  save: PropTypes.func.isRequired,
+  nextId: PropTypes.func.isRequired,
+  getById: PropTypes.func.isRequired,
+  get: PropTypes.func.isRequired
+})
 
 type State = {
   isLoading: boolean,
@@ -155,6 +165,10 @@ type WrappedComponentType = {
 } & $Subtype<ComponentType<any>>
 
 type HOC = (WrappedComponentType) => ComponentType<any>
+
+export {
+  dataStoreShapePropType
+}
 
 export type {
   ComponentType,
