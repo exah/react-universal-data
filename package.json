@@ -22,13 +22,13 @@
   "scripts": {
     "build": "run-s build:*",
     "build:esm": "cross-env NODE_ENV=production babel src -d esm",
-    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=modules babel src -d cjs",
+    "build:cjs": "cross-env NODE_ENV=production MODULES=cjs babel src -d cjs",
     "build:docs": "documentation build -c ./.documentation.yml src/** -f md -o docs/api.md",
     "prebuild": "npm run cleanup",
     "watch": "run-p \"build:* -- -w\" \"test:unit -- -w\"",
     "prewatch": "npm run cleanup",
     "test": "run-s test:*",
-    "test:unit": "cross-env BABEL_ENV=modules ava test",
+    "test:unit": "cross-env MODULES=cjs ava test",
     "test:lint": "eslint src test",
     "test:types": "flow check",
     "deploy": "np --no-cleanup",
@@ -64,11 +64,15 @@
     "template": ".changelog.hbs"
   },
   "ava": {
-    "babel": "inherit",
     "verbose": true,
     "require": [
-      "babel-register"
-    ]
+      "@babel/register"
+    ],
+    "babel": {
+      "testOptions": {
+        "extends": "./babel.config.js"
+      }
+    }
   },
   "peerDependencies": {
     "prop-types": "^15.0.0",
@@ -76,17 +80,18 @@
     "react-dom": "^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "auto-changelog": "^1.7.1",
-    "ava": "^0.25.0",
-    "babel-cli": "^6.26.0",
-    "babel-core": "6.26.3",
+    "ava": "^1.0.0-beta.8",
     "babel-eslint": "^8.2.3",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-flow": "^6.23.0",
-    "babel-register": "^6.26.0",
     "cross-env": "5.1.6",
     "documentation": "^8.0.0",
     "eslint": "^4.19.1",
@@ -110,6 +115,7 @@
     "rimraf": "^2.6.2"
   },
   "dependencies": {
+    "@babel/runtime": "^7.0.0",
     "create-react-context": "^0.2.2",
     "react-tree-walker": "^4.1.0",
     "recompose": "^0.27.1"
