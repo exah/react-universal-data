@@ -1,4 +1,4 @@
-import createContext from 'create-react-context'
+import { createContext } from 'react'
 import { defaultDataStore } from './data-store'
 
 /**
