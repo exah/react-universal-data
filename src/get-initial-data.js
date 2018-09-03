@@ -70,7 +70,10 @@ const getInitialData = (
             return false
           })
       }
-    }, {}, {}).then(() => resolve(dataStore.get()))
+    }, {}, {}).then(() => {
+      dataStore.resetIds() // prepare for next render
+      resolve(dataStore.get())
+    })
   )
 }
 

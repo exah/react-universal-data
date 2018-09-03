@@ -151,7 +151,7 @@ const withData = (
     constructor (props) {
       super(props)
 
-      if (dataId === INITIAL_ID) {
+      if (dataId === INITIAL_ID || props.dataStore.isInitial()) {
         dataId = props.dataStore.nextId()
       } else if (
         savedProps === null ||

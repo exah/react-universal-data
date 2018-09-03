@@ -81,7 +81,11 @@ const createDataStore = (initialData?: Object = {}): DataStoreType => {
       return pointer
     },
     getById: (id) => id != null ? store[id] : null,
-    get: () => store
+    get: () => store,
+    resetIds: () => {
+      pointer = INITIAL_ID
+    },
+    isInitial: () => pointer === INITIAL_ID
   }
 }
 

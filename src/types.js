@@ -14,7 +14,9 @@ type DataStoreType = {
   save: (id: number, value: StateData) => void,
   nextId: () => number,
   getById: (id: number) => StateData,
-  get: () => Object
+  get: () => Object,
+  isInitial: () => boolean,
+  resetIds: () => void
 }
 
 const dataStoreShapePropType = PropTypes.shape({
@@ -22,7 +24,9 @@ const dataStoreShapePropType = PropTypes.shape({
   save: PropTypes.func.isRequired,
   nextId: PropTypes.func.isRequired,
   getById: PropTypes.func.isRequired,
-  get: PropTypes.func.isRequired
+  get: PropTypes.func.isRequired,
+  isInitial: PropTypes.func.isRequired,
+  resetIds: PropTypes.func.isRequired
 })
 
 type State = {
