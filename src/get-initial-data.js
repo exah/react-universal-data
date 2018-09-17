@@ -73,6 +73,8 @@ const getInitialData = (
     }, {}, {}).then(() => {
       dataStore.resetIds() // prepare for next render
       resolve(dataStore.get())
+    }).catch((error) => {
+      reject(error)
     })
   )
 }
