@@ -1,3 +1,7 @@
+⚠️ React 16.6 is not currently supported (tested). Please use 16.5.
+
+---
+
 # 🗂 react-universal-data
 
 > Simple HOC and utils for getting initial and subsequent async data inside React components
@@ -6,7 +10,6 @@
 - [x] Request data inside HOC or React Component `getData` static prop
 - [x] Simple server-side rendering & client state restoration
 - [x] Can handle updates
-- [ ] React-Redux support (coming in 🔖 3.x)
 
 ## Install
 
