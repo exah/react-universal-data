@@ -110,17 +110,19 @@ const defaultMergeProps: MergePropsFn = ({ dataStore, ...props }, state) => ({
  */
 
 const withData = (
-  getData: GetDataFn,
+  getData: GetDataFn = defaultGetData,
   shouldDataUpdate: ShouldDataUpdateFn = defaultShouldDataUpdate,
   mergeProps: MergePropsFn = defaultMergeProps
 ): HOC => (WrappedComponent: WrappedComponentType) => {
   let dataId = INITIAL_ID
   let savedProps = null
 
-  const getDataPromise = getData || WrappedComponent.getData || defaultGetData
+  const _getData = WrappedComponent.getData || getData
+  const _shouldDataUpdate = WrappedComponent.shouldDataUpdate || shouldDataUpdate
+  const _mergeProps = WrappedComponent.mergeDataWithProps || mergeProps
 
   const getDataHandler = (props, prevData, serverContext) => {
-    const promise = getDataPromise({
+    const promise = _getData({
       isClient: IS_CLIENT,
       isServer: IS_SERVER,
       ...serverContext,
@@ -155,7 +157,7 @@ const withData = (
         dataId = props.dataStore.nextId()
       } else if (
         savedProps === null ||
-        shouldDataUpdate(savedProps, props, true)
+        _shouldDataUpdate(savedProps, props, true)
       ) {
         props.dataStore.save(dataId, null)
       }
@@ -206,7 +208,7 @@ const withData = (
       }
     }
     componentDidUpdate (prevProps) {
-      if (shouldDataUpdate(prevProps, this.props, false)) {
+      if (_shouldDataUpdate(prevProps, this.props, false)) {
         savedProps = { ...this.props }
         this.getData()
       }
@@ -216,7 +218,7 @@ const withData = (
     }
     render () {
       return (
-        <WrappedComponent {...mergeProps(this.props, this.state)} />
+        <WrappedComponent {..._mergeProps(this.props, this.state)} />
       )
     }
   }
