@@ -1,7 +1,3 @@
-⚠️ React 16.6 is not currently supported (tested). Please use 16.5.
-
----
-
 # 🗂 react-universal-data
 
 > Simple HOC and utils for getting initial and subsequent async data inside React components
