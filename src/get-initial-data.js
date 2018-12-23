@@ -5,7 +5,7 @@ import type {
   DataStoreType
 } from './types'
 
-import reactTreeWalker from 'react-tree-walker'
+import reactTreeWalker from '@exah/react-tree-walker'
 import { defaultDataStore } from './data-store'
 
 /**

@@ -685,6 +685,11 @@
   dependencies:
     arrify "^1.0.1"
 
+"@exah/react-tree-walker@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@exah/react-tree-walker/-/react-tree-walker-4.3.1.tgz#a3473a5c3175351bfcff32482319e5c1357ede22"
+  integrity sha512-ji1Q1y88El8iT85/oIqCUhjG81CoNmNlLaENu0xtEXWyQvM2GXgvCJb0adZVZsRiD8DNS40pOg5WR5NP0DtR2Q==
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
@@ -5400,10 +5405,6 @@ react-test-renderer@^16.4.2:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
     react-is "^16.4.2"
-
-react-tree-walker@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/react-tree-walker/-/react-tree-walker-4.3.0.tgz#b7cae498cebb490281e9e99a01bdb9c6b4926cd3"
 
 react@^16.4.2:
   version "16.4.2"
