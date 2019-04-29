@@ -31,7 +31,7 @@
     "test:unit": "cross-env MODULES=cjs ava test",
     "test:lint": "eslint src test",
     "test:types": "flow check",
-    "deploy": "np --no-cleanup",
+    "release": "np --no-cleanup",
     "cleanup": "rimraf cjs esm",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "preversion": "npm run build",
