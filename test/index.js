@@ -84,6 +84,7 @@ test('getInitialData: call getInitialData prop in app element tree', async (t) =
 })
 
 test('withData: update: callback', async (t) => {
+  await sleep(20)
   renderer.update(<App id={2} result='id-2' />)
   await sleep(20)
 
@@ -91,6 +92,7 @@ test('withData: update: callback', async (t) => {
 })
 
 test('withData: prevent update: null returned', async (t) => {
+  await sleep(20)
   renderer.update(<App id={3} result={null} />)
   await sleep(20)
 
@@ -98,6 +100,7 @@ test('withData: prevent update: null returned', async (t) => {
 })
 
 test('withData: prevent update: same id (default)', async (t) => {
+  await sleep(100)
   renderer.update(<App id={3} result='id-3' />)
   await sleep(100)
 
