@@ -116,7 +116,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "react-ssr-prepass": "^1.0.4",
-    "recompose": "^0.30.0"
+    "react-ssr-prepass": "^1.0.4"
   }
 }
