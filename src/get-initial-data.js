@@ -5,7 +5,7 @@ import type {
   DataStoreType
 } from './types'
 
-import reactTreeWalker from '@exah/react-tree-walker'
+import prepass from 'react-ssr-prepass'
 import { defaultDataStore } from './data-store'
 
 /**
@@ -61,16 +61,16 @@ const getInitialData = (
   dataStore.init()
 
   return new Promise((resolve, reject) =>
-    reactTreeWalker(rootElement, (el, instance) => {
+    prepass(rootElement, (el, instance: any) => {
       if (instance && instance.getInitialData) {
         return instance
           .getInitialData(serverContext)
           .catch((error) => {
             reject(error)
-            return false
+            throw error
           })
       }
-    }, {}, {}).then(() => {
+    }).then(() => {
       dataStore.resetIds() // prepare for next render
       resolve(dataStore.get())
     }).catch((error) => {

@@ -14,7 +14,6 @@ import {
 } from './types'
 
 import React, { PureComponent } from 'react'
-import { shallowEqual, wrapDisplayName } from 'recompose'
 import { DataConsumer } from './context'
 import { defaultDataStore } from './data-store'
 
@@ -24,12 +23,12 @@ import {
   INITIAL_ID
 } from './constants'
 
-const defaultGetData: GetDataFn = () => Promise.resolve(false)
+const defaultGetData: GetDataFn = () => Promise.resolve(null)
 
 const defaultShouldDataUpdate: ShouldDataUpdateFn = (prev, next) => {
   if (prev.match && prev.location) {
     return !(
-      shallowEqual(prev.match.params, next.match.params) &&
+      prev.match.params === next.match.params &&
       prev.location.pathname === next.location.pathname &&
       prev.location.search === next.location.search
     )
@@ -117,12 +116,14 @@ const withData = (
   let dataId = INITIAL_ID
   let savedProps = null
 
-  const _getData = WrappedComponent.getData || getData
-  const _shouldDataUpdate = WrappedComponent.shouldDataUpdate || shouldDataUpdate
-  const _mergeProps = WrappedComponent.mergeDataWithProps || mergeProps
+  const methods = {
+    getData: WrappedComponent.getData || getData,
+    shouldDataUpdate: WrappedComponent.shouldDataUpdate || shouldDataUpdate,
+    mergeProps: WrappedComponent.mergeDataWithProps || mergeProps
+  }
 
   const getDataHandler = (props, prevData, serverContext) => {
-    const promise = _getData({
+    const promise = methods.getData({
       isClient: IS_CLIENT,
       isServer: IS_SERVER,
       ...serverContext,
@@ -140,10 +141,7 @@ const withData = (
 
   class Data extends PureComponent<any, any> {
     isRequestCancelled: boolean
-    static displayName = wrapDisplayName(
-      WrappedComponent,
-      'withData'
-    )
+    static displayName = `withData(${WrappedComponent.displayName || WrappedComponent.name || 'Component'}`
     static defaultProps = {
       dataStore: defaultDataStore
     }
@@ -157,7 +155,7 @@ const withData = (
         dataId = props.dataStore.nextId()
       } else if (
         savedProps === null ||
-        _shouldDataUpdate(savedProps, props, true)
+        methods.shouldDataUpdate(savedProps, props, true)
       ) {
         props.dataStore.save(dataId, null)
       }
@@ -170,7 +168,7 @@ const withData = (
 
       savedProps = { ...props }
     }
-    _handleRequest = (requestPromise) => {
+    handleRequest = (requestPromise) => {
       this.isRequestCancelled = false
       this.setState({ isLoading: true })
 
@@ -188,15 +186,12 @@ const withData = (
 
       return requestPromise
     }
-    _cancelRequest = () => {
-      this.isRequestCancelled = true
-    }
     getInitialData = (serverContext) => getDataHandler(
       this.props,
       this.state.data,
       serverContext
     )
-    getData = () => this._handleRequest(
+    getData = () => this.handleRequest(
       getDataHandler(
         this.props,
         this.state.data
@@ -208,17 +203,17 @@ const withData = (
       }
     }
     componentDidUpdate (prevProps) {
-      if (_shouldDataUpdate(prevProps, this.props, false)) {
+      if (methods.shouldDataUpdate(prevProps, this.props, false)) {
         savedProps = { ...this.props }
         this.getData()
       }
     }
     componentWillUnmount () {
-      this._cancelRequest()
+      this.isRequestCancelled = true
     }
     render () {
       return (
-        <WrappedComponent {..._mergeProps(this.props, this.state)} />
+        <WrappedComponent {...methods.mergeProps(this.props, this.state)} />
       )
     }
   }
