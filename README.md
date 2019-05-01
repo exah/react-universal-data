@@ -144,7 +144,7 @@ ReactDOM.hydrate((
 
 ## Links
 
-- [react-tree-walker](https://github.com/ctrlplusb/react-tree-walker) - inside `getInitialData`
+- [react-ssr-prepass](https://github.com/FormidableLabs/react-ssr-prepass) - inside `getInitialData`
 - [webpack-hot-server-middleware](https://www.npmjs.com/package/webpack-hot-server-middleware) - server-side entry for webpack
 - [goremykina.com](https://github.com/exah/goremykina) - usage example
 
