@@ -4837,10 +4837,10 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
-object-is@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/object-is/-/object-is-1.0.1.tgz#0aa60ec9989a0b3ed795cf4d06f62cf1ad6539b6"
-  integrity sha1-CqYOyZiaCz7Xlc9NBvYs8a1lObY=
+object-is@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/object-is/-/object-is-1.0.2.tgz#6b80eb84fe451498f65007982f035a5b445edec4"
+  integrity sha512-Epah+btZd5wrrfjkJZq1AOB9O6OxUQto45hzFd7lXGrpHPGE0W1k+426yrZV+k6NJOzLNNW/nVsmZdIWsAqoOQ==
 
 object-keys@^1.0.11, object-keys@^1.0.8:
   version "1.0.11"
@@ -5357,12 +5357,12 @@ react-is@^16.8.1, react-is@^16.8.6:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
   integrity sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
 
-react-ssr-prepass@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/react-ssr-prepass/-/react-ssr-prepass-1.0.4.tgz#a74ebccd2610d002008e491d830b9b40af7ca5ea"
-  integrity sha512-aQNtHE7q6/zzJLuID1LOXU6yHY1aSJIEuK81PlGFxYmGKoVYXQoNLZ/ZJx4SmZiLt37otIbw3Qoqdth1Go+0Vg==
+react-ssr-prepass@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-ssr-prepass/-/react-ssr-prepass-1.1.2.tgz#3a7b60798e8f8a7002cd34fad48420937d3285f7"
+  integrity sha512-z1FN7yO+a+C5Y0wDLhsseIBX3yn823cXjs5MuyKRtrSDIVNsYKUIB7++vc4uqI5eMSr8kpYjFgc1i6iJRUuJdQ==
   dependencies:
-    object-is "^1.0.1"
+    object-is "^1.0.2"
 
 react-test-renderer@^16.8.6:
   version "16.8.6"
