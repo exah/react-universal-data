@@ -87,9 +87,9 @@
     "preset": "ts-jest/presets/js-with-ts"
   },
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0",
-    "react-is": "^16.8.0"
+    "react": "^16.8.13",
+    "react-dom": "^16.13.0",
+    "react-is": "^16.13.0"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^4.0.1",
@@ -133,7 +133,6 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "@babel/runtime": "^7.8.7",
     "react-ssr-prepass": "^1.1.2"
   }
 }
