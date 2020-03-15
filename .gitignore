@@ -1,6 +1,7 @@
 # Builded files
 cjs
 esm
+types
 
 ### Windows ###
 # Windows image file caches

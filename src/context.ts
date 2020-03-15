@@ -23,9 +23,7 @@ import { defaultDataStore } from './data-store'
  * )
  */
 
-const { Provider, Consumer } = createContext(defaultDataStore)
+export const DataContext = createContext(defaultDataStore)
 
-export {
-  Provider as DataProvider,
-  Consumer as DataConsumer
-}
+export const DataProvider = DataContext.Provider
+export const DataConsumer = DataContext.Consumer
