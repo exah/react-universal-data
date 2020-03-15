@@ -1,8 +1,15 @@
 import { useReducer, useMemo } from 'react'
 import { AsyncState } from './types'
 
-const INITIAL_STATE: AsyncState<null> = {
+export const INITIAL_STATE: AsyncState<null> = {
   isReady: null,
+  isLoading: false,
+  error: null,
+  data: null,
+}
+
+export const READY_STATE: AsyncState<null> = {
+  isReady: true,
   isLoading: false,
   error: null,
   data: null,
@@ -12,7 +19,6 @@ type Action<T> =
   | { type: ActionTypes.START }
   | { type: ActionTypes.FINISH; payload: T | Error }
 
-type Init<T> = (input: typeof INITIAL_STATE) => AsyncState<T>
 type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
 
 enum ActionTypes {
@@ -20,28 +26,28 @@ enum ActionTypes {
   FINISH = 'FINISH',
 }
 
-const init = <T>(input: Init<T> = null): AsyncState<T> => input(INITIAL_STATE)
-
 const reducer: Reducer<any> = (prevState, action) => {
   switch (action.type) {
     case ActionTypes.START:
-      return { ...prevState, isReady: false, isLoading: true, error: null }
+      return {
+        ...prevState,
+        isLoading: true,
+        error: null,
+      }
     case ActionTypes.FINISH: {
       if (action.payload instanceof Error) {
         return {
           ...prevState,
+          ...READY_STATE,
           isReady: false,
-          isLoading: false,
           error: action.payload,
         }
       }
 
       return {
         ...prevState,
-        isReady: true,
-        isLoading: false,
+        ...READY_STATE,
         data: action.payload,
-        error: null,
       }
     }
     default:
@@ -49,12 +55,11 @@ const reducer: Reducer<any> = (prevState, action) => {
   }
 }
 
-export function useAsyncState<T>(initalState: Init<T>) {
-  const [state, dispatch] = useReducer<Reducer<T>, Init<T>>(
-    reducer,
-    initalState,
-    init
-  )
+export function useAsyncState<T>(initialState: AsyncState<T>) {
+  const [state, dispatch] = useReducer<Reducer<T>>(reducer, {
+    ...INITIAL_STATE,
+    ...initialState,
+  })
 
   const actions = useMemo(() => {
     const start = () => {

@@ -4,7 +4,7 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { getInitialData } from './get-initial-data'
 import { withGetInitialProps } from './with-get-initial-props'
-import { useUniversalData } from './use-univeral-data'
+import { useRUD } from './use-rud'
 
 jest.mock('./constants', () => ({
   IS_CLIENT: false,
@@ -36,7 +36,7 @@ test('should render response from `useUniversalData`', async () => {
   const A = ({ response }) => <div data-testid="response">{response}</div>
 
   function B(props) {
-    const state = useUniversalData(() => ({ response: 'Bar' }), 'B-comp')
+    const state = useRUD(() => ({ response: 'Bar' }), 'B-comp')
     const response = state.isReady
       ? `${props.response} ${state.data.response}`
       : 'Not Ready'
@@ -47,7 +47,7 @@ test('should render response from `useUniversalData`', async () => {
   const C = (props) => <B {...props} />
 
   function D() {
-    const state = useUniversalData(() => ({ response: 'Foo' }), 'D-comp')
+    const state = useRUD(() => ({ response: 'Foo' }), 'D-comp')
     const response = state.isReady ? state.data.response : 'Not Ready'
 
     return <C response={response} />

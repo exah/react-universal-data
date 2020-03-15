@@ -3,17 +3,17 @@ import { AsyncState, Fetcher } from './types'
 import { DataContext } from './context'
 
 import { INITIAL_ID } from './constants'
-import { useUniversalData } from './use-univeral-data'
+import { useRUD } from './use-rud'
 
 type Merge<P, D> = P &
   D &
   Pick<AsyncState<D>, 'isReady' | 'isLoading' | 'error'>
 
 type BaseComponent<D, P> = React.ComponentType<Merge<P, D>> & {
-  getInitialProps: Fetcher<D>
+  getInitialProps?: Fetcher<D>
 }
 
-const merge = <D, P>(props: P, state: AsyncState<D>): Merge<P, D> => ({
+const defaultMerge = <D, P>(props: P, state: AsyncState<D>): Merge<P, D> => ({
   ...props,
   ...state.data,
   isReady: state.isReady,
@@ -22,20 +22,21 @@ const merge = <D, P>(props: P, state: AsyncState<D>): Merge<P, D> => ({
 })
 
 export function withGetInitialProps<D = any, P = any>(
-  BaseComp: BaseComponent<D, P>
+  BaseComp: BaseComponent<D, P>,
+  fetcher: Fetcher<D> = BaseComp.getInitialProps,
+  merge = defaultMerge
 ) {
   const name = BaseComp.displayName || BaseComp.name || 'Component'
 
-  let dataId = INITIAL_ID
+  let id = INITIAL_ID
   function DataComp(props: P) {
     const store = useContext(DataContext)
 
-    if (dataId === INITIAL_ID) {
-      dataId = store.nextId()
+    if (id === INITIAL_ID) {
+      id = store.nextId()
     }
 
-    const state = useUniversalData(BaseComp.getInitialProps, dataId)
-
+    const state = useRUD(fetcher, id)
     return createElement(BaseComp, merge<D, P>(props, state))
   }
 

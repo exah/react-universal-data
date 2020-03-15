@@ -17,14 +17,15 @@ export function createDataStore<T>(initial: T): Store<T> {
       pointer += 1
       return pointer
     },
-    exists: (id) => store[id] !== undefined,
-    getById: (id) => (id != null ? store[id] : null),
-    get: () => store,
     resetIds: () => {
       pointer = INITIAL_ID
       return pointer
     },
-    isInitial: () => pointer === INITIAL_ID,
+    exists: (id) => store[id] !== undefined,
+    remove: (id) => delete store[id],
+    getById: (id) => (id != null ? store[id] : null),
+    isInitial: () => Object.keys(store).length === 0,
+    get: () => store,
   }
 }
 
