@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./types",
+    "allowJs": false,
     "emitDeclarationOnly": true
   },
   "exclude": ["node_modules", "src/**/*.test.ts"]

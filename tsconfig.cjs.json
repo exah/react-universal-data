@@ -2,7 +2,8 @@
   "extends": "./tsconfig",
   "compilerOptions": {
     "outDir": "./cjs",
-    "module": "commonjs"
+    "module": "commonjs",
+    "allowJs": false
   },
   "exclude": ["node_modules", "src/**/*.test.ts"]
 }
