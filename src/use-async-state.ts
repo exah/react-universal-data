@@ -2,7 +2,7 @@ import { useReducer, useMemo } from 'react'
 import { AsyncState } from './types'
 
 export const INITIAL_STATE: AsyncState<null> = {
-  isReady: null,
+  isReady: false,
   isLoading: false,
   error: null,
   result: null,

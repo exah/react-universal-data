@@ -36,11 +36,6 @@ function useClientData<T>(fetcher: Fetcher<T>, key: Key): AsyncState<T> {
   useLayoutEffect(() => {
     if (store.exists(key)) {
       store.remove(key)
-    }
-  }, [store, key])
-
-  useLayoutEffect(() => {
-    if (store.exists(key)) {
       return
     }
 

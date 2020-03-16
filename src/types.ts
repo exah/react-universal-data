@@ -15,7 +15,7 @@ export type Store<D extends Data = Data> = {
 
 export type AsyncState<T> =
   // initial
-  | { isReady: null; isLoading: false; error: null; result: null }
+  | { isReady: false; isLoading: false; error: null; result: null }
   // ready
   | { isReady: true; isLoading: false; error: null; result: T }
   // loading
