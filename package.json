@@ -10,14 +10,17 @@
   "module": "esm/index.js",
   "types": "types/index.d.ts",
   "files": [
-    "./esm",
-    "./cjs"
+    "cjs",
+    "esm",
+    "types"
   ],
   "tags": [
     "react",
     "tree",
     "ssr",
     "data",
+    "hook",
+    "suspense",
     "prefetch"
   ],
   "scripts": {
@@ -41,12 +44,17 @@
   },
   "size-limit": [
     {
+      "name": "[server]",
       "path": "./esm/index.js",
-      "limit": "6Kb"
+      "limit": "5.5Kb"
     },
     {
-      "path": "./cjs/index.js",
-      "limit": "6Kb"
+      "name": "[client]",
+      "path": "./esm/index.js",
+      "limit": "1Kb",
+      "ignore": [
+        "react-ssr-prepass"
+      ]
     }
   ],
   "eslintConfig": {
@@ -80,7 +88,8 @@
       "no-undef": 0,
       "prettier/prettier": 2,
       "no-shadow": 2,
-      "react/prop-types": 0
+      "react/prop-types": 0,
+      "react/jsx-pascal-case": 0
     }
   },
   "jest": {

@@ -25,7 +25,3 @@ export type AsyncState<T> =
 
 export type Context = { isServer: boolean; isClient: boolean }
 export type Fetcher<T> = (key: Key, context: Context) => Promise<T>
-
-export type Merge<P, D> = P &
-  D &
-  Pick<AsyncState<D>, 'isReady' | 'isLoading' | 'error'>

@@ -8,7 +8,7 @@ export const INITIAL_STATE: AsyncState<null> = {
   result: null,
 }
 
-export const READY_STATE: AsyncState<null> = {
+export const FINISH_STATE: AsyncState<null> = {
   isReady: true,
   isLoading: false,
   error: null,
@@ -21,7 +21,7 @@ type Action<T> =
 
 type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
 
-enum ActionTypes {
+const enum ActionTypes {
   START = 'START',
   FINISH = 'FINISH',
 }
@@ -38,7 +38,7 @@ const reducer: Reducer<any> = (prevState, action) => {
       if (action.payload instanceof Error) {
         return {
           ...prevState,
-          ...READY_STATE,
+          ...FINISH_STATE,
           isReady: false,
           error: action.payload,
         }
@@ -46,7 +46,7 @@ const reducer: Reducer<any> = (prevState, action) => {
 
       return {
         ...prevState,
-        ...READY_STATE,
+        ...FINISH_STATE,
         result: action.payload,
       }
     }

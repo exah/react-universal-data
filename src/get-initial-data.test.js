@@ -3,25 +3,25 @@ import '@testing-library/jest-dom'
 import React from 'react'
 import { render } from '@testing-library/react'
 import { getInitialData } from './get-initial-data'
-import { withGetInitialProps } from './with-get-initial-props'
+import { RUD } from './rud'
 import { useRUD } from './use-rud'
 
 jest.mock('./constants', () => ({
+  ...jest.requireActual('./constants'),
   IS_CLIENT: false,
   IS_SERVER: true,
-  INITIAL_ID: -1,
 }))
 
-test('should render response from `withData`', async () => {
+test('should render response from `RUD`', async () => {
   const A = ({ response }) => <div data-testid="response">{response}</div>
   const B = (props) => <A {...props} />
   const C = (props) => <B {...props} />
 
-  C.getInitialProps = () => {
-    return { response: 'Foo' }
-  }
-
-  const D = withGetInitialProps(C)
+  const D = () => (
+    <RUD fetcher={() => ({ response: 'Foo' })} id="D-comp">
+      {(state) => <C {...state.result} />}
+    </RUD>
+  )
 
   const element = <D />
   const data = await getInitialData(element)
@@ -29,7 +29,7 @@ test('should render response from `withData`', async () => {
   const { getByTestId } = render(element)
 
   expect(getByTestId('response')).toHaveTextContent('Foo')
-  expect(data['0']).toEqual({ response: 'Foo' })
+  expect(data['D-comp']).toEqual({ response: 'Foo' })
 })
 
 test('should render response from `useRUD`', async () => {
@@ -48,9 +48,8 @@ test('should render response from `useRUD`', async () => {
 
   function D() {
     const state = useRUD(() => ({ response: 'Foo' }), 'D-comp')
-    const response = state.isReady ? state.result.response : 'Not Ready'
 
-    return <C response={response} />
+    return <C {...state.result} />
   }
 
   const element = <D />
