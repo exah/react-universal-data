@@ -32,7 +32,7 @@ test('should render response from `withData`', async () => {
   expect(data['0']).toEqual({ response: 'Foo' })
 })
 
-test('should render response from `useUniversalData`', async () => {
+test('should render response from `useRUD`', async () => {
   const A = ({ response }) => <div data-testid="response">{response}</div>
 
   function B(props) {
