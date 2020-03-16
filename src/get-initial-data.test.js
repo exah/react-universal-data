@@ -38,7 +38,7 @@ test('should render response from `useUniversalData`', async () => {
   function B(props) {
     const state = useRUD(() => ({ response: 'Bar' }), 'B-comp')
     const response = state.isReady
-      ? `${props.response} ${state.data.response}`
+      ? `${props.response} ${state.result.response}`
       : 'Not Ready'
 
     return <A response={response} />
@@ -48,7 +48,7 @@ test('should render response from `useUniversalData`', async () => {
 
   function D() {
     const state = useRUD(() => ({ response: 'Foo' }), 'D-comp')
-    const response = state.isReady ? state.data.response : 'Not Ready'
+    const response = state.isReady ? state.result.response : 'Not Ready'
 
     return <C response={response} />
   }

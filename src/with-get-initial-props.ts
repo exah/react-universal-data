@@ -15,7 +15,7 @@ type BaseComponent<D, P> = React.ComponentType<Merge<P, D>> & {
 
 const defaultMerge = <D, P>(props: P, state: AsyncState<D>): Merge<P, D> => ({
   ...props,
-  ...state.data,
+  ...state.result,
   isReady: state.isReady,
   isLoading: state.isLoading,
   error: state.error,

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect } from 'react'
+import { useContext, useLayoutEffect } from 'react'
 import { IS_CLIENT, IS_SERVER } from './constants'
 import { DataContext } from './context'
 import { AsyncState, Key, Context, Fetcher, Store } from './types'
@@ -9,12 +9,12 @@ const CONTEXT: Context = {
   isClient: IS_CLIENT,
 }
 
-function useServerData<T>(fetcher: Fetcher<T>, key: Key) {
+function useServerData<T>(fetcher: Fetcher<T>, key: Key): AsyncState<T> {
   const store = useContext(DataContext)
 
   if (store.exists(key)) {
-    const data: T = store.getById(key)
-    return { ...READY_STATE, data }
+    const result: T = store.getById(key)
+    return { ...READY_STATE, result }
   }
 
   const promise = Promise.resolve(fetcher(key, CONTEXT))
@@ -25,11 +25,11 @@ function useServerData<T>(fetcher: Fetcher<T>, key: Key) {
 
 function init<T>(key: Key, store: Store): AsyncState<T> {
   return store.exists(key)
-    ? { ...READY_STATE, data: store.getById(key) }
+    ? { ...READY_STATE, result: store.getById(key) }
     : { ...INITIAL_STATE }
 }
 
-function useClientData<T>(fetcher: Fetcher<T>, key: Key) {
+function useClientData<T>(fetcher: Fetcher<T>, key: Key): AsyncState<T> {
   const store = useContext(DataContext)
   const [state, actions] = useAsyncState<T>(init<T>(key, store))
 
@@ -39,7 +39,7 @@ function useClientData<T>(fetcher: Fetcher<T>, key: Key) {
     }
   }, [store, key])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (store.exists(key)) {
       return
     }

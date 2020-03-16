@@ -15,13 +15,13 @@ export type Store<D extends Data = Data> = {
 
 export type AsyncState<T> =
   // initial
-  | { isReady: null; isLoading: false; error: null; data: null }
+  | { isReady: null; isLoading: false; error: null; result: null }
   // ready
-  | { isReady: true; isLoading: false; error: null; data: T }
+  | { isReady: true; isLoading: false; error: null; result: T }
   // loading
-  | { isReady: boolean; isLoading: true; error: Error | null; data: T | null }
+  | { isReady: boolean; isLoading: true; error: Error | null; result: T | null }
   // error
-  | { isReady: false; isLoading: false; error: Error; data: T | null }
+  | { isReady: false; isLoading: false; error: Error; result: T | null }
 
 export type Context = { isServer: boolean; isClient: boolean }
 export type Fetcher<T> = (key: Key, context: Context) => Promise<T>

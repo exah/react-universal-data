@@ -5,14 +5,14 @@ export const INITIAL_STATE: AsyncState<null> = {
   isReady: null,
   isLoading: false,
   error: null,
-  data: null,
+  result: null,
 }
 
 export const READY_STATE: AsyncState<null> = {
   isReady: true,
   isLoading: false,
   error: null,
-  data: null,
+  result: null,
 }
 
 type Action<T> =
@@ -47,7 +47,7 @@ const reducer: Reducer<any> = (prevState, action) => {
       return {
         ...prevState,
         ...READY_STATE,
-        data: action.payload,
+        result: action.payload,
       }
     }
     default:
