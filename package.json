@@ -1,6 +1,6 @@
 {
   "name": "react-universal-data",
-  "version": "4.0.0-3",
+  "version": "4.0.0-4",
   "description": "Simple React HOC for getting async data + SSR",
   "author": "John Grishin <hi@johngrish.in>",
   "license": "MIT",
