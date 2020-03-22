@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { defaultStore } from './data-store'
+import { defaultStore } from './store'
 
 /**
  * Provides `dataStore` created with {@link createDataStore} to {@link withData} components using [React Context](http://reactjs.org/docs/context.html).

@@ -1,13 +1,11 @@
 import prepass from 'react-ssr-prepass'
-import { defaultStore } from './data-store'
+import { RawData } from './types'
+import { defaultStore } from './store'
 
-function getInitialData(
-  element: React.ElementType,
-  store = defaultStore
-): Promise<ReturnType<typeof store['get']>> {
+function getInitialData(element: React.ElementType, store = defaultStore) {
   store.clear()
 
-  return prepass(element).then(() => Array.from(store))
+  return prepass(element).then<RawData>(() => Array.from(store))
 }
 
 export { getInitialData }

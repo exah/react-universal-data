@@ -9,10 +9,15 @@
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "types/index.d.ts",
+  "browser": {
+    "./cjs/index.js": "./cjs/index.browser.js",
+    "./esm/index.js": "./esm/index.browser.js"
+  },
   "files": [
     "cjs",
     "esm",
-    "types"
+    "types",
+    "server"
   ],
   "tags": [
     "react",
@@ -28,6 +33,7 @@
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:types": "tsc -p tsconfig.types.json",
+    "prebuild": "rimraf esm cjs types",
     "test": "jest",
     "lint": "eslint --ext ts --ext js src/",
     "size": "size-limit",
@@ -45,16 +51,13 @@
   "size-limit": [
     {
       "name": "[server]",
-      "path": "./esm/index.js",
+      "path": "./cjs/index.js",
       "limit": "5.5Kb"
     },
     {
       "name": "[client]",
-      "path": "./esm/index.js",
-      "limit": "1Kb",
-      "ignore": [
-        "react-ssr-prepass"
-      ]
+      "path": "./esm/index.browser.js",
+      "limit": "580Kb"
     }
   ],
   "eslintConfig": {
@@ -137,6 +140,7 @@
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-is": "^16.13.0",
+    "rimraf": "^3.0.2",
     "size-limit": "^4.0.1",
     "ts-jest": "^25.2.0",
     "typescript": "^3.7.5"

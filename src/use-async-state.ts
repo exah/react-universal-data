@@ -8,38 +8,29 @@ type Action<T> =
 
 type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
 
+const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
+
 const reducer: Reducer<any> = (prevState, action) => {
   switch (action.type) {
     case ActionTypes.START:
-      return {
-        ...prevState,
-        isLoading: true,
-        error: null,
-      }
+      return merge(prevState, { isLoading: true, error: null })
     case ActionTypes.FINISH: {
       if (action.payload instanceof Error) {
-        return {
-          ...FINISH_STATE,
-          isReady: false,
-          error: action.payload,
-        }
+        return merge(FINISH_STATE, { isReady: false, error: action.payload })
       }
 
-      return {
-        ...FINISH_STATE,
-        result: action.payload,
-      }
+      return merge(FINISH_STATE, { result: action.payload })
     }
     default:
       throw new Error('Unknown action type')
   }
 }
 
-export function useAsyncState<T>(initialState: AsyncState<T>) {
-  const [state, dispatch] = useReducer<Reducer<T>>(reducer, {
-    ...INITIAL_STATE,
-    ...initialState,
-  })
+export function useAsyncState<T>(input: AsyncState<T>) {
+  const [state, dispatch] = useReducer<Reducer<T>>(
+    reducer,
+    merge(INITIAL_STATE, input)
+  )
 
   const actions = useMemo(() => {
     const start = () => {
