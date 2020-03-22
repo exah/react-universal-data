@@ -7,20 +7,18 @@ import { useAsyncState } from './use-async-state'
 const CONTEXT: Context = { isServer: IS_SERVER, isClient: IS_CLIENT }
 const finished = <T>(result: T) => Object.assign({}, FINISH_STATE, { result })
 
-function useServerData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
+function useFetchServerData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
   const store = useContext(DataContext)
 
   if (store.has(id)) {
     return finished<T>(store.get(id))
   }
 
-  const promise = Promise.resolve(fetcher(id, CONTEXT))
-  promise.then((result) => store.set(id, result))
-
-  throw promise
+  const promise = Promise.resolve().then(() => fetcher(id, CONTEXT))
+  throw promise.then((result) => store.set(id, result))
 }
 
-function useClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
+function useFetchClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
   const store = useContext(DataContext)
   const init = store.has(id) ? finished<T>(store.get(id)) : null
   const [state, actions] = useAsyncState<T>(init)
@@ -31,7 +29,7 @@ function useClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
       return
     }
 
-    const promise = Promise.resolve(fetcher(id, CONTEXT))
+    const promise = Promise.resolve().then(() => fetcher(id, CONTEXT))
 
     actions.start()
     promise.then(actions.finish).catch(actions.finish)
@@ -40,4 +38,4 @@ function useClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
   return state
 }
 
-export const useRUD = IS_SERVER ? useServerData : useClientData
+export const useFetchData = IS_SERVER ? useFetchServerData : useFetchClientData

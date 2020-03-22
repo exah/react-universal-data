@@ -1,8 +1,11 @@
-import { RawData, Key } from './types'
+import { RawStore } from './types'
 
-export const defaultStore = new Map<Key, any>()
+export const createStore = (input?: RawStore) => new Map(input)
 
-export const hydrateData = (input: RawData) =>
+export const defaultStore = createStore()
+
+export function hydrateData(input: RawStore) {
   input.forEach(([key, value]) => {
     defaultStore.set(key, value)
   })
+}

@@ -1,5 +1,6 @@
 export type Key = number | string
-export type RawData = [Key, any][]
+export type Entry<T = any> = [Key, T]
+export type RawStore<T = any> = Entry<T>[]
 
 export type AsyncState<T> =
   // initial

@@ -2,7 +2,7 @@ import { createContext } from 'react'
 import { defaultStore } from './store'
 
 /**
- * Provides `dataStore` created with {@link createDataStore} to {@link withData} components using [React Context](http://reactjs.org/docs/context.html).
+ * Provides `store` created with {@link createStore} to {@link useFetchData} hook using [React Context](http://reactjs.org/docs/context.html).
  *
  * #### Props
  *
@@ -13,11 +13,11 @@ import { defaultStore } from './store'
  * @example
  *
  * import React from 'react'
- * import { createDataStore, DataProvider } from 'react-universal-data'
+ * import { createStore, DataProvider } from 'react-universal-data'
  * import App from './app'
  *
  * const appElement = (
- *   <DataProvider value={createDataStore()}>
+ *   <DataProvider value={createStore()}>
  *     <App />
  *   </DataProvider>
  * )
