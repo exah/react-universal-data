@@ -1,17 +1,5 @@
 export type Key = number | string
-export type Data = Record<Key, any>
-
-export type Store<D extends Data = Data> = {
-  init: (data?: D) => void
-  save: (id: keyof D, value: D[typeof id]) => void
-  getById: (id: keyof D) => D[typeof id]
-  get: () => D
-  exists: (id: keyof D) => boolean
-  remove: (id: keyof D) => boolean
-  nextId: () => number
-  isInitial: () => boolean
-  resetIds: () => void
-}
+export type RawData = [Key, any][]
 
 export type AsyncState<T> =
   // initial

@@ -1,5 +1,4 @@
-export { createDataStore, hydrateData } from './data-store'
+export { hydrateData } from './data-store'
 export { DataProvider } from './context'
 export { getInitialData } from './get-initial-data'
-export { RUD } from './rud'
 export { useRUD } from './use-rud'

@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { defaultDataStore } from './data-store'
+import { defaultStore } from './data-store'
 
 /**
  * Provides `dataStore` created with {@link createDataStore} to {@link withData} components using [React Context](http://reactjs.org/docs/context.html).
@@ -23,7 +23,7 @@ import { defaultDataStore } from './data-store'
  * )
  */
 
-export const DataContext = createContext(defaultDataStore)
+export const DataContext = createContext(defaultStore)
 
 export const DataProvider = DataContext.Provider
 export const DataConsumer = DataContext.Consumer

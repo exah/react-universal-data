@@ -1,30 +1,12 @@
 import { useReducer, useMemo } from 'react'
 import { AsyncState } from './types'
-
-export const INITIAL_STATE: AsyncState<null> = {
-  isReady: false,
-  isLoading: false,
-  error: null,
-  result: null,
-}
-
-export const FINISH_STATE: AsyncState<null> = {
-  isReady: true,
-  isLoading: false,
-  error: null,
-  result: null,
-}
+import { ActionTypes, INITIAL_STATE, FINISH_STATE } from './constants'
 
 type Action<T> =
   | { type: ActionTypes.START }
   | { type: ActionTypes.FINISH; payload: T | Error }
 
 type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
-
-const enum ActionTypes {
-  START = 'START',
-  FINISH = 'FINISH',
-}
 
 const reducer: Reducer<any> = (prevState, action) => {
   switch (action.type) {
@@ -37,7 +19,6 @@ const reducer: Reducer<any> = (prevState, action) => {
     case ActionTypes.FINISH: {
       if (action.payload instanceof Error) {
         return {
-          ...prevState,
           ...FINISH_STATE,
           isReady: false,
           error: action.payload,
@@ -45,7 +26,6 @@ const reducer: Reducer<any> = (prevState, action) => {
       }
 
       return {
-        ...prevState,
         ...FINISH_STATE,
         result: action.payload,
       }
