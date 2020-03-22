@@ -50,14 +50,8 @@
   },
   "size-limit": [
     {
-      "name": "[server]",
-      "path": "./cjs/index.js",
-      "limit": "5.5Kb"
-    },
-    {
-      "name": "[client]",
-      "path": "./esm/index.browser.js",
-      "limit": "580Kb"
+      "path": "./esm/index.js",
+      "limit": "580B"
     }
   ],
   "eslintConfig": {
