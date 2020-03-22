@@ -14,8 +14,9 @@ function useFetchServerData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
     return finished<T>(store.get(id))
   }
 
-  const promise = Promise.resolve().then(() => fetcher(id, CONTEXT))
-  throw promise.then((result) => store.set(id, result))
+  throw Promise.resolve()
+    .then(() => fetcher(id, CONTEXT))
+    .then((result) => store.set(id, result))
 }
 
 function useFetchClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
@@ -29,10 +30,10 @@ function useFetchClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
       return
     }
 
-    const promise = Promise.resolve().then(() => fetcher(id, CONTEXT))
-
     actions.start()
-    promise.then(actions.finish).catch(actions.finish)
+    Promise.resolve()
+      .then(() => fetcher(id, CONTEXT))
+      .then(actions.finish, actions.finish)
   }, [store, id, actions, fetcher])
 
   return state

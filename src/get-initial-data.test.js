@@ -11,7 +11,7 @@ jest.mock('./constants', () => ({
   IS_SERVER: true,
 }))
 
-test('should render response from `useFetchData`', async () => {
+test('should render response', async () => {
   const A = ({ response }) => <div data-testid="response">{response}</div>
 
   function B(props) {
@@ -41,7 +41,7 @@ test('should render response from `useFetchData`', async () => {
   expect(data.get('D-comp')).toEqual({ response: 'Foo' })
 })
 
-test('should throw error from `useFetchData` on rejected request', async () => {
+test('should throw error on rejected request', async () => {
   const A = ({ response }) => <div data-testid="response">{response}</div>
 
   function B() {
@@ -61,7 +61,7 @@ test('should throw error from `useFetchData` on rejected request', async () => {
   await expect(getInitialData(<D />)).rejects.toThrow('Foo')
 })
 
-test('should throw error from `useFetchData` in plain function', async () => {
+test('should throw error from plain function', async () => {
   function B() {
     useFetchData(() => {
       throw new Error('Foo')
