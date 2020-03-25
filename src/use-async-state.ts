@@ -21,8 +21,9 @@ const reducer: Reducer<any> = (prevState, action) => {
 
       return merge(FINISH_STATE, { result: action.payload })
     }
-    default:
+    default: {
       throw new Error('Unknown action type')
+    }
   }
 }
 

@@ -12,12 +12,12 @@ export const INITIAL_STATE: AsyncState<null> = {
   isReady: false,
   isLoading: false,
   error: null,
-  result: null,
+  result: undefined,
 }
 
 export const FINISH_STATE: AsyncState<null> = {
   isReady: true,
   isLoading: false,
   error: null,
-  result: null,
+  result: undefined,
 }

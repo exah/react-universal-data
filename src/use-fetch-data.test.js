@@ -55,7 +55,7 @@ test('should fetch if data in store not available', async () => {
     isReady: false,
     isLoading: true,
     error: null,
-    result: null,
+    result: undefined,
   })
 
   await waitForNextUpdate()
@@ -67,6 +67,7 @@ test('should fetch if data in store not available', async () => {
     result: 'foo',
   })
 
+  expect(resource).toBeCalledTimes(1)
   expect(resource).toBeCalledWith('foo', CLIENT_CONTEXT)
 })
 
@@ -83,7 +84,7 @@ test('should set `error` in state on failed request', async () => {
     isReady: false,
     isLoading: true,
     error: null,
-    result: null,
+    result: undefined,
   })
 
   await waitForNextUpdate()
@@ -92,7 +93,7 @@ test('should set `error` in state on failed request', async () => {
     isReady: false,
     isLoading: false,
     error: new Error('Foo'),
-    result: null,
+    result: undefined,
   })
 
   expect(resource).toBeCalledTimes(1)
