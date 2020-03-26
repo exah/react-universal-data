@@ -109,7 +109,11 @@ function UserPosts({ userId }) {
 
 ### `getInitialData`
 
-Handles `useFetchData` on server side and gathers results for hydration in the browser.
+Handles `useFetchData` on server side and gathers results for [hydration](#hydrateInitialData) in the browser.
+
+```ts
+type getInitialData = (element: JSX.Element) => Promise<[string, any][]>
+```
 
 ```js
 // server.js
@@ -146,6 +150,10 @@ async function server(req, res) {
 
 Hydrates initial data gathered with [`getInitialData`](#getInitialData) before rendering the app in the browser.
 
+```ts
+type hydrateInitialData = (initial: [string, any][]) => void
+```
+
 ```js
 // client.js
 import React from 'react'
@@ -153,7 +161,7 @@ import ReactDOM from 'react-dom'
 import { hydrateInitialData } from 'react-universal-data'
 import { App } from './App'
 
-hydrateInitialData(window._ssr)
+hydrateInitialData(window._ssr || [])
 ReactDOM.hydrate(<App />, document.getElementById('app'))
 ```
 
