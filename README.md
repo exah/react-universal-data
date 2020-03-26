@@ -22,7 +22,7 @@ $ yarn add react-universal-data
 
 ### `useFetchData`
 
-Request data on server or in the browser.
+Request data and save result to state.
 
 ```ts
 type useFetchData<T> = (
@@ -49,7 +49,7 @@ export type AsyncState<T> =
   | { isReady: false; isLoading: false; error: Error; result?: T }
 ```
 
-Here we try to fetch posts via [https://jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com) API – result will be handled inside the hook.
+<details><summary>Fetch post data via [jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com) API</summary>
 
 ```js
 import React from 'react'
@@ -83,8 +83,10 @@ function Post({ id }) {
   return null
 }
 ```
+</details>
 
-As hook depends on `resource` to decide if it should perform an update, please wrap it inside `useCallback` or define it outside the render function, otherwise it maybe trigger infinite updates.
+As hook depends on `resource` function identity to be stable, so wrap it inside
+`useCallback` or define it outside the render function.
 
 ```js
 import React, { useCallback } from 'react'
@@ -94,7 +96,7 @@ function UserPosts({ userId }) {
   const fetchPosts = useCallback(() => (
     fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
       .then((response) => response.json())
-  ), [userId]) // will pereform update only if value changed
+  ), [userId]) // will pereform update if value changed
 
   const { result = [] } = useFetchData(fetchPost, 'user-posts')
 
@@ -106,7 +108,7 @@ function UserPosts({ userId }) {
 }
 ```
 
-## 💻 Complete demo
+## 💻 Demo
 
 [![Edit react-universal-data-ssr](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-universal-data-ssr-jp9el?fontsize=14&hidenavigation=1&module=%2Fsrc%2FApp.js&theme=dark)
 
