@@ -33,7 +33,7 @@ type useFetchData<T> = (
 ) => AsyncState<T>
 ```
 
-> ⚠️ NOTE: `id` must be unique for whole application.
+> ⚠️ `id` must be unique for whole application.
 
 Returned object can be in 4 different forms – depending on promise state.
 
@@ -49,7 +49,7 @@ export type AsyncState<T> =
   | { isReady: false; isLoading: false; error: Error; result?: T }
 ```
 
-<details><summary>Fetch post data via [jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com) API</summary>
+<details><summary>👀 Fetch sample post via <a href="https://jsonplaceholder.typicode.com">jsonplaceholder.typicode.com</a> API</summary>
 
 ```js
 import React from 'react'
@@ -85,8 +85,7 @@ function Post({ id }) {
 ```
 </details>
 
-As hook depends on `resource` function identity to be stable, so wrap it inside
-`useCallback` or define it outside the render function.
+As hook depends on `resource` function identity to be stable, please, wrap it inside `useCallback` or define it outside the render function to prevent infinite updates.
 
 ```js
 import React, { useCallback } from 'react'
