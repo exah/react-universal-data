@@ -112,20 +112,34 @@ function UserPosts({ userId }) {
 Handles `useFetchData` on server side and gathers results for hydration in the browser.
 
 ```js
-const element = <App />
-const data = await getInitialData(element)
-const html = renderToString(
-  <html>
-    <body>
-      <div id='app'>{element}</div>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `window._ssr = ${JSON.stringify(data)};`,
-        }}
-      />
-    </body>
-  </html>
-)
+// server.js
+import React from 'react'
+import { renderToString } from 'react-dom/server'
+import { getInitialData } from 'react-universal-data'
+import { App } from './App'
+
+async function server(req, res) {
+  const element = <App />
+
+  const data = await getInitialData(element).catch((error) => /* handle error */)
+  const html = renderToString(
+    <html>
+      <body>
+        <div id='app'>{element}</div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window._ssr = ${JSON.stringify(data)};`,
+          }}
+        />
+        <script src='/client.js' />
+      </body>
+    </html>
+  )
+
+  res.write('<!DOCTYPE html>')
+  res.write(html)
+  res.end()
+}
 ```
 
 ### `hydrateInitialData`
@@ -133,6 +147,7 @@ const html = renderToString(
 Hydrates initial data gathered with [`getInitialData`](#getInitialData) before rendering the app in the browser.
 
 ```js
+// client.js
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { hydrateInitialData } from 'react-universal-data'
