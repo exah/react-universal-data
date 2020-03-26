@@ -85,7 +85,7 @@ function Post({ id }) {
 ```
 </details>
 
-As hook depends on `resource` function identity to be stable, please, wrap it inside `useCallback` or define it outside the render function to prevent infinite updates.
+As hook depends on `fetcher` function identity to be stable, please, wrap it inside `useCallback` or define it outside the render function to prevent infinite updates.
 
 ```js
 import React, { useCallback } from 'react'
