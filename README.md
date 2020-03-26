@@ -27,7 +27,7 @@ Request data and save result to state.
 ```ts
 type useFetchData<T> = (
   // async function that can return any type of data
-  resource: (id: string, context: { isServer: boolean }) => Promise<T>,
+  fetcher: (id: string, context: { isServer: boolean }) => Promise<T>,
   // unique id that will be used for storing & hydrating data while SSR
   id: string
 ) => AsyncState<T>
@@ -97,7 +97,7 @@ function UserPosts({ userId }) {
       .then((response) => response.json())
   ), [userId]) // will pereform update if value changed
 
-  const { result = [] } = useFetchData(fetchPost, 'user-posts')
+  const { result = [] } = useFetchData(fetchPosts, 'user-posts')
 
   return (
     <ul>
@@ -106,6 +106,42 @@ function UserPosts({ userId }) {
   )
 }
 ```
+
+### `getInitialData`
+
+Handles `useFetchData` on server side and gathers results for hydration in the browser.
+
+```js
+const element = <App />
+const data = await getInitialData(element)
+const html = renderToString(
+  <html>
+    <body>
+      <div id='app'>{element}</div>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window._ssr = ${JSON.stringify(data)};`,
+        }}
+      />
+    </body>
+  </html>
+)
+```
+
+### `hydrateInitialData`
+
+Hydrates initial data gathered with [`getInitialData`](#getInitialData) before rendering the app in the browser.
+
+```js
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { hydrateInitialData } from 'react-universal-data'
+import { App } from './App'
+
+hydrateInitialData(window._ssr)
+ReactDOM.hydrate(<App />, document.getElementById('app'))
+```
+
 
 ## 💻 Demo
 
