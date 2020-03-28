@@ -176,7 +176,7 @@ ReactDOM.hydrate(<App />, document.getElementById('app'))
 
 [![Edit react-universal-data-ssr](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-universal-data-ssr-jp9el?fontsize=14&hidenavigation=1&module=%2Fsrc%2FApp.js&theme=dark)
 
-## 🔗 Relataed
+## 🔗 Related
 
 ### Packages
 
