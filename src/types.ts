@@ -1,6 +1,4 @@
 export type Key = number | string
-export type Entry<T = any> = [Key, T]
-export type RawStore<T = any> = Entry<T>[]
 
 export type AsyncState<T> =
   // initial
@@ -13,4 +11,4 @@ export type AsyncState<T> =
   | { isReady: false; isLoading: false; error: Error; result?: T }
 
 export type Context = { isServer: boolean }
-export type Fetcher<T> = (key: Key, context: Context) => Promise<T>
+export type Fetcher<T> = (key: Key, context: Context) => Promise<T> | T

@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 import { defaultStore } from './store'
 import { useFetchData } from './use-fetch-data'
 
-const CLIENT_CONTEXT = { isClient: true, isServer: false }
+const CLIENT_CONTEXT = { isServer: false }
 
 test('should use store value for first render and update state on next', async () => {
   const resource = jest.fn((key) => key)

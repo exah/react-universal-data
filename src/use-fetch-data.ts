@@ -7,7 +7,17 @@ import { useAsyncState } from './use-async-state'
 const CONTEXT: Context = { isServer: IS_SERVER }
 const finished = <T>(result: T) => Object.assign({}, FINISH_STATE, { result })
 
-function useFetchServerData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
+/**
+ * Requests data and preserves the result to the state.
+ * The `id` must be unique for the whole application.
+ *
+ * @see https://github.com/exah/react-universal-data#useFetchData
+ */
+
+function useFetchServerData<T = any>(
+  fetcher: Fetcher<T>,
+  id: Key
+): AsyncState<T> {
   const store = useContext(DataContext)
 
   if (store.has(id)) {
@@ -19,7 +29,10 @@ function useFetchServerData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
     .then((result) => store.set(id, result))
 }
 
-function useFetchClientData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {
+function useFetchClientData<T = any>(
+  fetcher: Fetcher<T>,
+  id: Key
+): AsyncState<T> {
   const store = useContext(DataContext)
   const init = store.has(id) ? finished<T>(store.get(id)) : null
   const [state, actions] = useAsyncState<T>(init)
