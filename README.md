@@ -1,6 +1,6 @@
 # 🗂 react-universal-data
 
-[![](https://flat.badgen.net/npm/v/react-universal-data)](https://www.npmjs.com/package/react-universal-data) [![](https://flat.badgen.net/bundlephobia/minzip/react-universal-data)](https://bundlephobia.com/result?p=react-universal-data) ![](https://flat.badgen.net/travis/exah/react-universal-data)
+[![](https://flat.badgen.net/npm/v/react-universal-data?cache=600)](https://www.npmjs.com/package/react-universal-data) [![](https://flat.badgen.net/bundlephobia/minzip/react-universal-data?cache=600)](https://bundlephobia.com/result?p=react-universal-data) ![](https://flat.badgen.net/travis/exah/react-universal-data?cache=600)
 
 #### Easy to use hook for getting data on client and server side with effortless hydration of state
 
