@@ -19,14 +19,17 @@
     "types",
     "server"
   ],
-  "tags": [
+  "keywords": [
     "react",
-    "tree",
     "ssr",
     "data",
     "hook",
+    "isomorphic",
+    "universal",
     "suspense",
-    "prefetch"
+    "prefetch",
+    "async",
+    "server-rendering"
   ],
   "scripts": {
     "build": "run-s build:*",
