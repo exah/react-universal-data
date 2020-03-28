@@ -1,152 +1,191 @@
 # 🗂 react-universal-data
 
-> Simple HOC and utils for getting initial and subsequent async data inside React components
+#### Easy to use hook for getting data on client and server side with effortless hydration of state
 
-- [x] Promise based
-- [x] Request data inside HOC or React Component `getData` static prop
-- [x] Simple server-side rendering & client state restoration
+- [x] Only 600B minified and gziped
+- [x] Simple hooks API
+- [x] TypeScript
 - [x] Can handle updates
+- [x] [Suspense](http://reactjs.org/docs/concurrent-mode-suspense.html) on server side via [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) 💕
 
-## Install
+> _This is a NO BULLSHIT hook: just PLUG IT in your components, get ALL THE DATA you need (and some more) both CLIENT- and SERVER-side, HYDRATE that ~~bastard~~ app while SSRing like it's NO BIG DEAL, effortlessly PASS IT to the client and render THE SHIT out of it_
+> 
+> [@razdvapoka](https://github.com/razdvapoka)
+
+## 📦 Install
+
+```sh
+$ npm i -S react-universal-data
+```
 
 ```sh
 $ yarn add react-universal-data
 ```
 
-## [API](./docs/api.md)
+## 📖 Docs
 
-## Example
+### `useFetchData`
 
-Inside `withData` HOC
+Requests data and preserves the result to the state.
 
-
-```js
-import 'isomorphic-fetch'
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { withData } from 'react-universal-data'
-
-const Page = ({ user = {} }) => <div>Hello {user.name}!</div>
-
-const PageWithData = withData(() =>
-  fetch('https://jsonplaceholder.typicode.com/users/1')
-    .then(res => res.json())
-    .then(user => ({ user }))
-)(Page)
-
-ReactDOM.render(<PageWithData />, document.getElementById('root'))
+```ts
+type useFetchData<T> = (
+  // async function that can return any type of data
+  fetcher: (id: string, context: { isServer: boolean }) => Promise<T>,
+  // unique id that will be used for storing & hydrating data while SSR
+  id: string
+) => AsyncState<T>
 ```
 
-[![Edit pp98jzr4y7](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/pp98jzr4y7)
+> ⚠️ The `id` must be unique for the whole application.
 
----
+Returned object can be in 4 different forms – depending on the promise's state.
 
-Or with static `getData` prop inside React Component
+```ts
+export type AsyncState<T> =
+  // initial
+  | { isReady: false; isLoading: false; error: null; result: undefined }
+  // fulfilled
+  | { isReady: true; isLoading: false; error: null; result: T }
+  // pending
+  | { isReady: boolean; isLoading: true; error: Error | null; result?: T }
+  // rejected
+  | { isReady: false; isLoading: false; error: Error; result?: T }
+```
+
+<details><summary>👀 Fetch a sample post via <a href="https://jsonplaceholder.typicode.com">jsonplaceholder.typicode.com</a> API</summary>
 
 ```js
-import 'isomorphic-fetch'
 import React from 'react'
-import ReactDOM from 'react-dom'
-import { withData } from 'react-universal-data'
+import { useFetchData } from 'react-universal-data'
 
-class Page extends React.Component {
-  static defaultProps = {
-    user: {}
-  }
-  static async getData() {
-    const user = await fetch(
-      'https://jsonplaceholder.typicode.com/users/1'
-    ).then(res => res.json())
+const fetchPost = (id) =>
+  fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+    .then((response) => response.json())
 
-    return {
-      user
-    }
-  }
-  render() {
-    const { user } = this.props
+function Post({ id }) {
+  const { isReady, isLoading, result, error } = useFetchData(fetchPost, id)
 
-    return <div>Hello {user.name}!</div>
+  if (isLoading) {
+    return <p>Loading...</p>
   }
+
+  if (error) {
+    return <p>Oh no: {error.message}</p>
+  }
+
+  // You can depend on `isReady` flag to ensure data loaded correctly
+  if (isReady) {
+    return (
+      <article>
+        <h2>{result.title}</h2>
+        <p>{result.body}</p>
+      </article>
+    )
+  }
+
+  return null
 }
+```
+</details>
 
-const PageWithData = withData()(Page)
+As the hook depends on the `fetcher` function identity to be stable, please, wrap it inside `useCallback` or define it outside of the render function to prevent infinite updates.
 
-ReactDOM.render(<PageWithData />, document.getElementById('root'))
+```js
+import React, { useCallback } from 'react'
+import { useFetchData } from 'react-universal-data'
+
+function UserPosts({ userId }) {
+  const fetchPosts = useCallback(() => (
+    fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
+      .then((response) => response.json())
+  ), [userId]) // will pereform update if value changed
+
+  const { result = [] } = useFetchData(fetchPosts, 'user-posts')
+
+  return (
+    <ul>
+      {result.map((post) => <li key={post.id}>{post.title}</li>)}
+    </ul>
+  )
+}
 ```
 
-[![Edit ovxkz1ojj9](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ovxkz1ojj9)
+### `getInitialData`
 
----
+Handles `useFetchData` on server side and gathers results for [hydration](#hydrateInitialData) in the browser.
 
-### Server-Side Rendering
-  
-With two-step rendering on server
+```ts
+type getInitialData = (element: JSX.Element) => Promise<[string, any][]>
+```
 
 ```js
 // server.js
-
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { getInitialData } from 'react-universal-data'
-import { html } from 'common-tags'
-import App from './app'
+import { App } from './App'
 
-export default () => (req, res) => {
-  const appElement = (<App />)
+async function server(req, res) {
+  const element = <App />
 
-  getInitialData(appElement)
-    .then((initialData) => {
-      res.send(html`
-        <!DOCTYPE html>
-        <html>
-          <body>
-            <div id="app">${renderToString(appElement)}</div>
-            <script>
-              (function () {
-                window._ssr = ${JSON.stringify({ initialData })};
-              })();
-            </script>
-            <script src="/client.js"></script>
-          </body>
-        </html>
-      `)
-    })
-    .catch((error) => {
-      console.error(error)
-      res.status(500)
-      res.send(`Error: ${error.message}`)
-    })
+  const data = await getInitialData(element).catch((error) => /* handle error */)
+  const html = renderToString(
+    <html>
+      <body>
+        <div id='app'>{element}</div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window._ssr = ${JSON.stringify(data)};`,
+          }}
+        />
+        <script src='/client.js' />
+      </body>
+    </html>
+  )
+
+  res.write('<!DOCTYPE html>')
+  res.write(html)
+  res.end()
 }
 ```
 
-Hydrate `App` and `initialData` in client
+### `hydrateInitialData`
+
+Hydrates initial data gathered with [`getInitialData`](#getInitialData) before rendering the app in the browser.
+
+```ts
+type hydrateInitialData = (initial: [string, any][]) => void
+```
 
 ```js
 // client.js
-
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { hydrateData } from 'react-universal-data'
-import App from './app'
+import { hydrateInitialData } from 'react-universal-data'
+import { App } from './App'
 
-// Get server state
-const { initialData } = (window._ssr || {})
-
-// Restore app state
-hydrateData(initialData)
-
-// Render app
-ReactDOM.hydrate((
-  <App />
-), document.getElementById('app'))
+hydrateInitialData(window._ssr || [])
+ReactDOM.hydrate(<App />, document.getElementById('app'))
 ```
 
 
-## Links
+## 💻 Demo
 
-- [react-ssr-prepass](https://github.com/FormidableLabs/react-ssr-prepass) - inside `getInitialData`
-- [webpack-hot-server-middleware](https://www.npmjs.com/package/webpack-hot-server-middleware) - server-side entry for webpack
-- [goremykina.com](https://github.com/exah/goremykina) - usage example
+[![Edit react-universal-data-ssr](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-universal-data-ssr-jp9el?fontsize=14&hidenavigation=1&module=%2Fsrc%2FApp.js&theme=dark)
+
+## 🔗 Relataed
+
+### Packages
+
+- [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) - server-side dependency
+- [`ya-fetch`](https://github.com/exah/ya-fetch) - a lightweight wrapper around `fetch` 
+
+### Real world usages
+
+- [kayway.me](https://github.com/exah/kayway)
+- [goremykina.com](https://github.com/exah/goremykina) 
+- [strelkamag.com](https://strelkamag.com)
 
 ---
 
