@@ -1,12 +1,16 @@
 # 🗂 react-universal-data
 
-> Super lightweight hook to request data on server and in browser with seamless hydration of state
+#### Easy to use hook for getting data on client and server side with effortless hydration of state
 
 - [x] Only 600B minified and gziped
 - [x] Simple hooks API
 - [x] TypeScript
 - [x] Can handle updates
 - [x] [Suspense](http://reactjs.org/docs/concurrent-mode-suspense.html) on server side via [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) 💕
+
+> _This is a NO BULLSHIT hook: just PLUG IT in your components, get ALL THE DATA you need (and some more) both CLIENT- and SERVER-side, HYDRATE that ~~bastard~~ app while SSRing like it's NO BIG DEAL, effortlessly PASS IT to the client and render THE SHIT out of it_
+> 
+> [@razdvapoka](https://github.com/razdvapoka)
 
 ## 📦 Install
 
@@ -22,7 +26,7 @@ $ yarn add react-universal-data
 
 ### `useFetchData`
 
-Request data and save result to state.
+Requests data and preserves the result to the state.
 
 ```ts
 type useFetchData<T> = (
@@ -33,9 +37,9 @@ type useFetchData<T> = (
 ) => AsyncState<T>
 ```
 
-> ⚠️ `id` must be unique for whole application.
+> ⚠️ The `id` must be unique for the whole application.
 
-Returned object can be in 4 different forms – depending on promise state.
+Returned object can be in 4 different forms – depending on the promise's state.
 
 ```ts
 export type AsyncState<T> =
@@ -49,7 +53,7 @@ export type AsyncState<T> =
   | { isReady: false; isLoading: false; error: Error; result?: T }
 ```
 
-<details><summary>👀 Fetch sample post via <a href="https://jsonplaceholder.typicode.com">jsonplaceholder.typicode.com</a> API</summary>
+<details><summary>👀 Fetch a sample post via <a href="https://jsonplaceholder.typicode.com">jsonplaceholder.typicode.com</a> API</summary>
 
 ```js
 import React from 'react'
@@ -85,7 +89,7 @@ function Post({ id }) {
 ```
 </details>
 
-As hook depends on `fetcher` function identity to be stable, please, wrap it inside `useCallback` or define it outside the render function to prevent infinite updates.
+As the hook depends on the `fetcher` function identity to be stable, please, wrap it inside `useCallback` or define it outside of the render function to prevent infinite updates.
 
 ```js
 import React, { useCallback } from 'react'
@@ -170,17 +174,18 @@ ReactDOM.hydrate(<App />, document.getElementById('app'))
 
 [![Edit react-universal-data-ssr](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/react-universal-data-ssr-jp9el?fontsize=14&hidenavigation=1&module=%2Fsrc%2FApp.js&theme=dark)
 
-## 🔗 Links
+## 🔗 Relataed
 
 ### Packages
 
-- [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass)
-- [`ya-fetch`](https://github.com/exah/ya-fetch) - lightweight wrapper around `fetch`
+- [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) - server-side dependency
+- [`ya-fetch`](https://github.com/exah/ya-fetch) - a lightweight wrapper around `fetch` 
 
-### Sites
+### Real world usages
 
-- [goremykina.com](https://github.com/exah/goremykina)
 - [kayway.me](https://github.com/exah/kayway)
+- [goremykina.com](https://github.com/exah/goremykina) 
+- [strelkamag.com](https://strelkamag.com)
 
 ---
 
