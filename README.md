@@ -1,5 +1,7 @@
 # 🗂 react-universal-data
 
+[![](https://flat.badgen.net/npm/v/react-universal-data)](https://www.npmjs.com/package/react-universal-data) [![](https://flat.badgen.net/bundlephobia/minzip/react-universal-data)](https://bundlephobia.com/result?p=react-universal-data) ![](https://flat.badgen.net/travis/exah/react-universal-data)
+
 #### Easy to use hook for getting data on client and server side with effortless hydration of state
 
 - [x] Only 600B minified and gziped
@@ -9,7 +11,7 @@
 - [x] [Suspense](http://reactjs.org/docs/concurrent-mode-suspense.html) on server side via [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) 💕
 
 > _This is a NO BULLSHIT hook: just PLUG IT in your components, get ALL THE DATA you need (and some more) both CLIENT- and SERVER-side, HYDRATE that ~~bastard~~ app while SSRing like it's NO BIG DEAL, effortlessly PASS IT to the client and render THE SHIT out of it_
-> 
+>
 > [@razdvapoka](https://github.com/razdvapoka)
 
 ## 📦 Install
@@ -179,12 +181,12 @@ ReactDOM.hydrate(<App />, document.getElementById('app'))
 ### Packages
 
 - [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) - server-side dependency
-- [`ya-fetch`](https://github.com/exah/ya-fetch) - a lightweight wrapper around `fetch` 
+- [`ya-fetch`](https://github.com/exah/ya-fetch) - a lightweight wrapper around `fetch`
 
 ### Real world usages
 
 - [kayway.me](https://github.com/exah/kayway)
-- [goremykina.com](https://github.com/exah/goremykina) 
+- [goremykina.com](https://github.com/exah/goremykina)
 - [strelkamag.com](https://strelkamag.com)
 
 ---

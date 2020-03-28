@@ -1,7 +1,7 @@
 {
   "name": "react-universal-data",
   "version": "4.0.0-6",
-  "description": "Simple React HOC for getting async data + SSR",
+  "description": "Easy to use hook for getting data on client and server side with effortless hydration of state",
   "author": "John Grishin <hi@johngrish.in>",
   "license": "MIT",
   "repository": "exah/react-universal-data",
