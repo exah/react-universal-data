@@ -12,5 +12,5 @@ export type AsyncState<T> =
   // error
   | { isReady: false; isLoading: false; error: Error; result?: T }
 
-export type Context = { isServer: boolean; isClient: boolean }
+export type Context = { isServer: boolean }
 export type Fetcher<T> = (key: Key, context: Context) => Promise<T>

@@ -1,10 +1,10 @@
 import { useContext, useLayoutEffect } from 'react'
-import { IS_CLIENT, IS_SERVER, FINISH_STATE } from './constants'
+import { IS_SERVER, FINISH_STATE } from './constants'
 import { DataContext } from './context'
 import { AsyncState, Key, Context, Fetcher } from './types'
 import { useAsyncState } from './use-async-state'
 
-const CONTEXT: Context = { isServer: IS_SERVER, isClient: IS_CLIENT }
+const CONTEXT: Context = { isServer: IS_SERVER }
 const finished = <T>(result: T) => Object.assign({}, FINISH_STATE, { result })
 
 function useFetchServerData<T>(fetcher: Fetcher<T>, id: Key): AsyncState<T> {

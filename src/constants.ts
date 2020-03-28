@@ -1,7 +1,6 @@
 import { AsyncState } from './types'
 
-export const IS_CLIENT = typeof window !== 'undefined'
-export const IS_SERVER = !IS_CLIENT
+export const IS_SERVER = typeof window === 'undefined'
 
 export const enum ActionTypes {
   START = 'START',

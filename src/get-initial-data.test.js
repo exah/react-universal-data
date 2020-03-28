@@ -9,7 +9,6 @@ import { defaultStore } from './store'
 
 jest.mock('./constants', () => ({
   ...jest.requireActual('./constants'),
-  IS_CLIENT: false,
   IS_SERVER: true,
 }))
 
