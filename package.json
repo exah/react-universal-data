@@ -1,6 +1,6 @@
 {
   "name": "react-universal-data",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Easy to use hook for getting data on client and server side with effortless hydration of state",
   "author": "John Grishin <hi@johngrish.in>",
   "license": "MIT",
