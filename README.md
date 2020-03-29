@@ -113,6 +113,34 @@ function UserPosts({ userId }) {
 }
 ```
 
+<details><summary>👀 Create a custom hook for it</summary>
+
+```js
+import React, { useCallback } from 'react'
+import { useFetchData } from 'react-universal-data'
+
+function useFetchUserPosts(userId) {
+  return useFetchData(
+    useCallback(() => (
+      fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
+        .then((response) => response.json())
+    ), [userId]),
+    'user-posts'
+  )
+}
+
+function UserPosts({ userId }) {
+  const { result = [] } = useFetchUserPosts(userId)
+
+  return (
+    <ul>
+      {result.map((post) => <li key={post.id}>{post.title}</li>)}
+    </ul>
+  )
+}
+```
+</details>
+
 ### `getInitialData`
 
 Handles `useFetchData` on server side and gathers results for [hydration](#hydrateInitialData) in the browser.
