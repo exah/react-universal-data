@@ -12,8 +12,9 @@ const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
 const reducer: Reducer<any> = (prevState, action) => {
   switch (action.type) {
-    case ActionTypes.START:
+    case ActionTypes.START: {
       return merge(prevState, { isLoading: true, error: null })
+    }
     case ActionTypes.FINISH: {
       if (action.payload instanceof Error) {
         return merge(FINISH_STATE, { isReady: false, error: action.payload })

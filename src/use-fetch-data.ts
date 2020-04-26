@@ -43,10 +43,21 @@ function useFetchClientData<T = any>(
       return
     }
 
+    let isCancelled = false
+    function finish(result: T) {
+      if (!isCancelled) actions.finish(result)
+    }
+
+    function cleanup() {
+      isCancelled = true
+    }
+
     actions.start()
     Promise.resolve()
       .then(() => fetcher(id, CONTEXT))
-      .then(actions.finish, actions.finish)
+      .then(finish, finish)
+
+    return cleanup
   }, [store, id, actions, fetcher])
 
   return state
