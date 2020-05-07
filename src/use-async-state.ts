@@ -1,6 +1,24 @@
 import { useReducer, useMemo } from 'react'
 import { AsyncState } from './types'
-import { ActionTypes, INITIAL_STATE, FINISH_STATE } from './constants'
+
+const enum ActionTypes {
+  START,
+  FINISH,
+}
+
+const INITIAL_STATE: AsyncState<null> = {
+  isReady: false,
+  isLoading: false,
+  error: null,
+  result: undefined,
+}
+
+const FINISH_STATE: AsyncState<null> = {
+  isReady: true,
+  isLoading: false,
+  error: null,
+  result: undefined,
+}
 
 type Action<T> =
   | { type: ActionTypes.START }
@@ -10,17 +28,21 @@ type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
 
 const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
-const reducer: Reducer<any> = (prevState, action) => {
+export const finished = <T>(value: T | Error) => {
+  if (value instanceof Error) {
+    return merge(FINISH_STATE, { isReady: false, error: value })
+  }
+
+  return merge(FINISH_STATE, { result: value })
+}
+
+export const reducer: Reducer<any> = (prevState, action) => {
   switch (action.type) {
     case ActionTypes.START: {
       return merge(prevState, { isLoading: true, error: null })
     }
     case ActionTypes.FINISH: {
-      if (action.payload instanceof Error) {
-        return merge(FINISH_STATE, { isReady: false, error: action.payload })
-      }
-
-      return merge(FINISH_STATE, { result: action.payload })
+      return finished(action.payload)
     }
     default: {
       throw new Error('Unknown action type')

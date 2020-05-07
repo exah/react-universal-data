@@ -4,6 +4,10 @@ import { useFetchData } from './use-fetch-data'
 
 const CLIENT_CONTEXT = { isServer: false }
 
+beforeEach(() => {
+  defaultStore.clear()
+})
+
 test('should use store value for first render and update state on next', async () => {
   const resource = jest.fn((key) => key)
   defaultStore.set('foo', 'bar')

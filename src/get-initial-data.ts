@@ -13,7 +13,7 @@ import { defaultStore } from './store'
 function getInitialData<T = any>(element: JSX.Element, store = defaultStore) {
   store.clear()
 
-  return prepass(element).then<[Key, T][]>(() => Array.from(store))
+  return prepass(element).then<[Key, T][]>(() => store.flush())
 }
 
 export { getInitialData }

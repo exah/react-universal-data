@@ -5,7 +5,7 @@ import { render } from '@testing-library/react'
 import { getInitialData } from './get-initial-data'
 import { useFetchData } from './use-fetch-data'
 import { DataProvider } from './context'
-import { defaultStore } from './store'
+import { createStore, defaultStore } from './store'
 
 jest.mock('./constants', () => ({
   ...jest.requireActual('./constants'),
@@ -83,7 +83,7 @@ test('should able to provide custom store', async () => {
     return <div data-testid="response">{state.result}</div>
   }
 
-  const store = new Map()
+  const store = createStore()
   const element = (
     <DataProvider value={store}>
       <A />
