@@ -3,6 +3,8 @@ import { DataContext } from './context'
 import { AsyncState, Key, Fetcher } from './types'
 import { useAsyncState, finished } from './use-async-state'
 
+const used = new Map()
+
 /**
  * Requests data and preserves the result to the state.
  * The `key` must be unique for the whole application.
@@ -20,30 +22,30 @@ export function useFetchData<T = any>(
   const [state, actions] = useAsyncState<T>(init)
 
   useLayoutEffect(() => {
-    if (store.has(key)) {
-      if (!ttl) {
-        store.delete(key)
-      } else if (!store.hasTTL(key)) {
-        store.setTTL(key, ttl)
-      }
+    let isCancelled = false
 
-      return
+    function cleanup() {
+      isCancelled = true
+      used.set(key, true)
     }
 
-    let isCancelled = false
     function finish(result: T) {
       if (isCancelled) return
 
       actions.finish(result)
 
-      if (!(result instanceof Error) && ttl) {
+      if (!(result instanceof Error)) {
         store.setTTL(key, ttl)
         store.set(key, result)
       }
     }
 
-    function cleanup() {
-      isCancelled = true
+    if (store.has(key) && !used.has(key)) {
+      if (ttl && !store.hasTTL(key)) {
+        store.setTTL(key, ttl)
+      }
+
+      return cleanup
     }
 
     actions.start()

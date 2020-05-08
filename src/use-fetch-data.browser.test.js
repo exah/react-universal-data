@@ -17,7 +17,6 @@ test('should use store value for first render and update state on next', async (
     { initialProps: 'foo' }
   )
 
-  expect(defaultStore.get('foo')).toBe(undefined)
   expect(result.current).toEqual({
     isReady: true,
     isLoading: false,
