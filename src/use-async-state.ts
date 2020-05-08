@@ -6,14 +6,14 @@ const enum ActionTypes {
   FINISH,
 }
 
-const INITIAL_STATE: AsyncState<null> = {
+const INITIAL_STATE: AsyncState<undefined> = {
   isReady: false,
   isLoading: false,
   error: null,
   result: undefined,
 }
 
-const FINISH_STATE: AsyncState<null> = {
+const FINISH_STATE: AsyncState<undefined> = {
   isReady: true,
   isLoading: false,
   error: null,
@@ -24,25 +24,25 @@ type Action<T> =
   | { type: ActionTypes.START }
   | { type: ActionTypes.FINISH; payload: T | Error }
 
-type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
+type Reducer<T> = (state: AsyncState<T>, action: Action<T>) => AsyncState<T>
 
 const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
-export const finished = <T>(value: T | Error) => {
+export const finished = <T>(value: T | Error, result?: T): AsyncState<T> => {
   if (value instanceof Error) {
-    return merge(FINISH_STATE, { isReady: false, error: value })
+    return merge(FINISH_STATE, { isReady: false, error: value, result })
   }
 
   return merge(FINISH_STATE, { result: value })
 }
 
-export const reducer: Reducer<any> = (prevState, action) => {
+export const reducer: Reducer<any> = (state, action) => {
   switch (action.type) {
     case ActionTypes.START: {
-      return merge(prevState, { isLoading: true, error: null })
+      return merge(state, { isLoading: true, error: null })
     }
     case ActionTypes.FINISH: {
-      return finished(action.payload)
+      return finished(action.payload, state.result)
     }
     default: {
       throw new Error('Unknown action type')
