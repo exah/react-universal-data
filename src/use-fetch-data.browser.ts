@@ -40,8 +40,8 @@ export function useFetchData<T = any>(
       }
     }
 
-    if (store.has(key) && !used.has(key)) {
-      if (ttl && !store.hasTTL(key)) {
+    if ((ttl || !used.has(key)) && store.has(key)) {
+      if (!store.hasTTL(key)) {
         store.setTTL(key, ttl)
       }
 
