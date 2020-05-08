@@ -1,7 +1,7 @@
-import { useReducer, useMemo } from 'react'
+import { useReducer } from 'react'
 import { AsyncState } from './types'
 
-const enum ActionTypes {
+export const enum ActionTypes {
   START,
   FINISH,
 }
@@ -13,57 +13,33 @@ const INITIAL_STATE: AsyncState<undefined> = {
   result: undefined,
 }
 
-const FINISH_STATE: AsyncState<undefined> = {
-  isReady: true,
-  isLoading: false,
-  error: null,
-  result: undefined,
-}
-
 type Action<T> =
   | { type: ActionTypes.START }
-  | { type: ActionTypes.FINISH; payload: T | Error }
+  | { type: ActionTypes.FINISH; result: T | Error }
 
 type Reducer<T> = (state: AsyncState<T>, action: Action<T>) => AsyncState<T>
 
 const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
-export const finished = <T>(value: T | Error, result?: T): AsyncState<T> => {
-  if (value instanceof Error) {
-    return merge(FINISH_STATE, { isReady: false, error: value, result })
+export const finished = <T>(next: T | Error, prev?: T): AsyncState<T> => {
+  if (next instanceof Error) {
+    return merge(INITIAL_STATE, { isReady: false, error: next, result: prev })
   }
 
-  return merge(FINISH_STATE, { result: value })
+  return merge(INITIAL_STATE, { isReady: true, result: next })
 }
 
-export const reducer: Reducer<any> = (state, action) => {
+const reducer: Reducer<any> = (state, action) => {
   switch (action.type) {
     case ActionTypes.START: {
       return merge(state, { isLoading: true, error: null })
     }
     case ActionTypes.FINISH: {
-      return finished(action.payload, state.result)
+      return finished(action.result, state.result)
     }
   }
 }
 
 export function useAsyncState<T>(input: AsyncState<T>) {
-  const [state, dispatch] = useReducer<Reducer<T>>(
-    reducer,
-    merge(INITIAL_STATE, input)
-  )
-
-  const actions = useMemo(() => {
-    const start = () => {
-      dispatch({ type: ActionTypes.START })
-    }
-
-    const finish = (payload: T) => {
-      dispatch({ type: ActionTypes.FINISH, payload })
-    }
-
-    return { start, finish }
-  }, [dispatch])
-
-  return [state, actions] as const
+  return useReducer<Reducer<T>>(reducer, merge(INITIAL_STATE, input))
 }

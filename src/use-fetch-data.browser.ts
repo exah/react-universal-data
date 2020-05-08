@@ -1,7 +1,7 @@
 import { useContext, useLayoutEffect } from 'react'
 import { DataContext } from './context'
 import { AsyncState, Key, Fetcher } from './types'
-import { useAsyncState, finished } from './use-async-state'
+import { ActionTypes, useAsyncState, finished } from './use-async-state'
 
 const used = new Map()
 
@@ -19,7 +19,7 @@ export function useFetchData<T = any>(
 ): AsyncState<T> {
   const store = useContext(DataContext)
   const init = store.has(key) ? finished<T>(store.get(key)) : null
-  const [state, actions] = useAsyncState<T>(init)
+  const [state, dispatch] = useAsyncState<T>(init)
 
   useLayoutEffect(() => {
     let isCancelled = false
@@ -32,7 +32,7 @@ export function useFetchData<T = any>(
     function finish(result: T) {
       if (isCancelled) return
 
-      actions.finish(result)
+      dispatch({ type: ActionTypes.FINISH, result })
 
       if (!(result instanceof Error)) {
         store.setTTL(key, ttl)
@@ -48,13 +48,14 @@ export function useFetchData<T = any>(
       return cleanup
     }
 
-    actions.start()
+    dispatch({ type: ActionTypes.START })
+
     Promise.resolve()
       .then(() => fetcher(key, { isServer: false }))
       .then(finish, finish)
 
     return cleanup
-  }, [store, key, ttl, actions, fetcher])
+  }, [store, key, ttl, dispatch, fetcher])
 
   return state
 }
