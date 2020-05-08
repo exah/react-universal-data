@@ -11,7 +11,12 @@ import { defaultStore } from './store'
  */
 
 function getInitialData<T = any>(element: JSX.Element, store = defaultStore) {
-  store.purge()
+  store.forEach((_, key) => {
+    if (!store.hasTTL(key)) {
+      store.delete(key)
+    }
+  })
+
   return prepass(element).then<[Key, T][]>(() => Array.from(store))
 }
 

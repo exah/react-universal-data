@@ -27,12 +27,7 @@ export const createStore = <T = any>(init?: [Key, T][]) => {
     }
   }
 
-  function purge() {
-    timer.forEach((_, key) => deleteTTL(key))
-    store.clear()
-  }
-
-  return Object.assign(store, { hasTTL, setTTL, purge })
+  return Object.assign(store, { hasTTL, setTTL })
 }
 
 export const defaultStore = createStore()
