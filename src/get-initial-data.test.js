@@ -7,11 +7,6 @@ import { useFetchData } from './use-fetch-data'
 import { DataProvider } from './context'
 import { createStore, defaultStore } from './store'
 
-jest.mock('./constants', () => ({
-  ...jest.requireActual('./constants'),
-  IS_SERVER: true,
-}))
-
 beforeEach(() => defaultStore.clear())
 
 test('should render response', async () => {

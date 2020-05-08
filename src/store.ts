@@ -1,50 +1,38 @@
 import { Key } from './types'
-import { IS_SERVER } from './constants'
 
-export const createStore = <T = any>(input?: [Key, T][]) => {
-  const store = new Map(input)
+export const createStore = <T = any>(init?: [Key, T][]) => {
+  const store = new Map(init)
   const timer = new Map()
 
-  return {
-    has(key: Key) {
-      return store.has(key)
-    },
-    get(key: Key) {
-      return store.get(key)
-    },
-    set(key: Key, value: T, ttl?: number) {
-      if (timer.has(key)) {
-        clearTimeout(timer.get(key))
-        timer.delete(key)
-      }
-
-      if (ttl && !IS_SERVER) {
-        timer.set(
-          key,
-          setTimeout(() => {
-            store.delete(key)
-            timer.delete(key)
-          }, ttl)
-        )
-      }
-
-      return store.set(key, value)
-    },
-    delete(key: Key) {
-      store.delete(key)
-    },
-    get size() {
-      return store.size
-    },
-    clear() {
-      timer.forEach((id) => clearTimeout(id))
-      timer.clear()
-      store.clear()
-    },
-    flush() {
-      return Array.from(store)
-    },
+  function hasTTL(key: Key) {
+    return timer.has(key)
   }
+
+  function deleteTTL(key: Key) {
+    clearTimeout(timer.get(key))
+    timer.delete(key)
+  }
+
+  function setTTL(key: Key, ttl?: number) {
+    deleteTTL(key)
+
+    if (ttl) {
+      timer.set(
+        key,
+        setTimeout(() => {
+          store.delete(key)
+          timer.delete(key)
+        }, ttl)
+      )
+    }
+  }
+
+  function purge() {
+    timer.forEach((_, key) => deleteTTL(key))
+    store.clear()
+  }
+
+  return Object.assign(store, { hasTTL, setTTL, purge })
 }
 
 export const defaultStore = createStore()

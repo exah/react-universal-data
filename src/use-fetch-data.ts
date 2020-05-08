@@ -1,10 +1,7 @@
-import { useContext, useLayoutEffect } from 'react'
-import { IS_SERVER } from './constants'
+import { useContext } from 'react'
 import { DataContext } from './context'
-import { AsyncState, Key, Context, Fetcher } from './types'
-import { useAsyncState, finished } from './use-async-state'
-
-const CONTEXT: Context = { isServer: IS_SERVER }
+import { AsyncState, Key, Fetcher } from './types'
+import { finished } from './use-async-state'
 
 /**
  * Requests data and preserves the result to the state.
@@ -13,7 +10,7 @@ const CONTEXT: Context = { isServer: IS_SERVER }
  * @see https://github.com/exah/react-universal-data#useFetchData
  */
 
-function useFetchServerData<T = any>(
+export function useFetchData<T = any>(
   fetcher: Fetcher<T>,
   key: Key,
   ttl?: number
@@ -25,50 +22,9 @@ function useFetchServerData<T = any>(
   }
 
   throw Promise.resolve()
-    .then(() => fetcher(key, CONTEXT))
-    .then((result) => store.set(key, result, ttl))
+    .then(() => fetcher(key, { isServer: true }))
+    .then((result) => {
+      store.set(key, result)
+      store.setTTL(key, ttl)
+    })
 }
-
-function useFetchClientData<T = any>(
-  fetcher: Fetcher<T>,
-  key: Key,
-  ttl?: number
-): AsyncState<T> {
-  const store = useContext(DataContext)
-  const init = store.has(key) ? finished<T>(store.get(key)) : null
-  const [state, actions] = useAsyncState<T>(init)
-
-  useLayoutEffect(() => {
-    if (store.has(key)) {
-      if (!ttl) store.delete(key)
-
-      return
-    }
-
-    let isCancelled = false
-    function finish(result: T) {
-      if (isCancelled) return
-
-      actions.finish(result)
-
-      if (!(result instanceof Error)) {
-        store.set(key, result, ttl)
-      }
-    }
-
-    function cleanup() {
-      isCancelled = true
-    }
-
-    actions.start()
-    Promise.resolve()
-      .then(() => fetcher(key, CONTEXT))
-      .then(finish, finish)
-
-    return cleanup
-  }, [store, key, actions, fetcher])
-
-  return state
-}
-
-export const useFetchData = IS_SERVER ? useFetchServerData : useFetchClientData
