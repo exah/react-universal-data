@@ -44,9 +44,6 @@ export const reducer: Reducer<any> = (state, action) => {
     case ActionTypes.FINISH: {
       return finished(action.payload, state.result)
     }
-    default: {
-      throw new Error('Unknown action type')
-    }
   }
 }
 
