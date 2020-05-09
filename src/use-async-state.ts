@@ -19,22 +19,26 @@ type Action<T> =
 
 const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
-export const finished = <T>(next: T | Error, prev?: T): AsyncState<T> => {
-  if (next instanceof Error) {
-    return merge(INITIAL_STATE, { isReady: false, error: next, result: prev })
+export const init = <T>(value?: T | Error, prev?: T): AsyncState<T> => {
+  if (value instanceof Error) {
+    return merge(INITIAL_STATE, { isReady: false, error: value, result: prev })
   }
 
-  return merge(INITIAL_STATE, { isReady: true, result: next })
+  return merge(INITIAL_STATE, { isReady: value !== undefined, result: value })
 }
 
-export const useAsyncState = <T>(input?: AsyncState<T>) =>
-  useReducer((state: AsyncState<T>, action: Action<T>): AsyncState<T> => {
-    switch (action.type) {
-      case ActionTypes.START: {
-        return merge(state, { isLoading: true, error: null })
+export const useAsyncState = <T>(input?: T) =>
+  useReducer(
+    (state: AsyncState<T>, action: Action<T>): AsyncState<T> => {
+      switch (action.type) {
+        case ActionTypes.START: {
+          return merge(state, { isLoading: true, error: null })
+        }
+        case ActionTypes.FINISH: {
+          return init(action.result, state.result)
+        }
       }
-      case ActionTypes.FINISH: {
-        return finished(action.result, state.result)
-      }
-    }
-  }, input || INITIAL_STATE)
+    },
+    input,
+    init
+  )

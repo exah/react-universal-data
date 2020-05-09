@@ -1,7 +1,7 @@
-import { useContext, useLayoutEffect } from 'react'
+import { useRef, useContext, useLayoutEffect } from 'react'
 import { DataContext } from './context'
 import { AsyncState, Key, Fetcher } from './types'
-import { ActionTypes, useAsyncState, finished } from './use-async-state'
+import { ActionTypes, useAsyncState } from './use-async-state'
 
 export const used = new Map()
 
@@ -18,8 +18,8 @@ export function useFetchData<T = any>(
   ttl?: number
 ): AsyncState<T> {
   const store = useContext(DataContext)
-  const init = store.has(key) ? finished<T>(store.get(key)) : null
-  const [state, dispatch] = useAsyncState<T>(init)
+  const initRef = useRef(store.get(key))
+  const [state, dispatch] = useAsyncState<T>(initRef.current)
 
   useLayoutEffect(() => {
     let isCancelled = false
@@ -43,6 +43,10 @@ export function useFetchData<T = any>(
     if ((ttl || !used.has(key)) && store.has(key)) {
       if (!store.hasTTL(key)) {
         store.setTTL(key, ttl)
+      }
+
+      if (initRef.current !== store.get(key)) {
+        dispatch({ type: ActionTypes.FINISH, result: store.get(key) })
       }
 
       return cleanup

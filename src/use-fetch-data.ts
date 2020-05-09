@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { DataContext } from './context'
 import { AsyncState, Key, Fetcher } from './types'
-import { finished } from './use-async-state'
+import { init } from './use-async-state'
 
 /**
  * Requests data and preserves the result to the state.
@@ -18,7 +18,7 @@ export function useFetchData<T = any>(
   const store = useContext(DataContext)
 
   if (store.has(key)) {
-    return finished<T>(store.get(key))
+    return init<T>(store.get(key))
   }
 
   throw Promise.resolve()

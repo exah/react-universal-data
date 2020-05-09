@@ -294,3 +294,129 @@ test('should not update state after unmount', async () => {
     result: 'foo',
   })
 })
+
+test('should use store value for first render and update state on next with cache', async () => {
+  const ttl = 1000
+  const timers = jest.useFakeTimers()
+  const resource = jest.fn((key) => key)
+
+  const { result, rerender, waitForNextUpdate } = renderHook(
+    (key) => useFetchData(resource, key, ttl),
+    { initialProps: 'foo' }
+  )
+
+  await waitForNextUpdate()
+
+  expect(result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'foo',
+  })
+
+  rerender('bar')
+
+  expect(result.current).toEqual({
+    isReady: true,
+    isLoading: true,
+    error: null,
+    result: 'foo',
+  })
+
+  await waitForNextUpdate()
+
+  expect(result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'bar',
+  })
+
+  rerender('foo')
+
+  expect(result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'foo',
+  })
+
+  expect(resource).toBeCalledTimes(2)
+
+  timers.advanceTimersByTime(ttl)
+
+  rerender('bar')
+
+  expect(result.current).toEqual({
+    isReady: true,
+    isLoading: true,
+    error: null,
+    result: 'foo',
+  })
+
+  await waitForNextUpdate()
+
+  expect(result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'bar',
+  })
+})
+
+test('should use store value for first render and update on next mount', async () => {
+  const resource = jest.fn((key) => key)
+
+  hydrateInitialData([['foo', 'foo']])
+
+  const first = renderHook(() => useFetchData(resource, 'foo'))
+
+  expect(first.result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'foo',
+  })
+
+  first.unmount()
+
+  const second = renderHook(() => useFetchData(resource, 'foo'))
+
+  expect(second.result.current).toEqual({
+    isReady: true,
+    isLoading: true,
+    error: null,
+    result: 'foo',
+  })
+
+  await second.waitForNextUpdate()
+
+  expect(second.result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'foo',
+  })
+
+  second.unmount()
+
+  const third = renderHook(() => useFetchData(resource, 'foo'))
+
+  expect(third.result.current).toEqual({
+    isReady: true,
+    isLoading: true,
+    error: null,
+    result: 'foo',
+  })
+
+  await third.waitForNextUpdate()
+
+  expect(third.result.current).toEqual({
+    isReady: true,
+    isLoading: false,
+    error: null,
+    result: 'foo',
+  })
+
+  expect(resource).toBeCalledTimes(2)
+})
