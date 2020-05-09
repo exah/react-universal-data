@@ -17,8 +17,6 @@ type Action<T> =
   | { type: ActionTypes.START }
   | { type: ActionTypes.FINISH; result: T | Error }
 
-type Reducer<T> = (state: AsyncState<T>, action: Action<T>) => AsyncState<T>
-
 const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
 export const finished = <T>(next: T | Error, prev?: T): AsyncState<T> => {
@@ -29,17 +27,14 @@ export const finished = <T>(next: T | Error, prev?: T): AsyncState<T> => {
   return merge(INITIAL_STATE, { isReady: true, result: next })
 }
 
-const reducer: Reducer<any> = (state, action) => {
-  switch (action.type) {
-    case ActionTypes.START: {
-      return merge(state, { isLoading: true, error: null })
+export const useAsyncState = <T>(input?: AsyncState<T>) =>
+  useReducer((state: AsyncState<T>, action: Action<T>): AsyncState<T> => {
+    switch (action.type) {
+      case ActionTypes.START: {
+        return merge(state, { isLoading: true, error: null })
+      }
+      case ActionTypes.FINISH: {
+        return finished(action.result, state.result)
+      }
     }
-    case ActionTypes.FINISH: {
-      return finished(action.result, state.result)
-    }
-  }
-}
-
-export function useAsyncState<T>(input: AsyncState<T>) {
-  return useReducer<Reducer<T>>(reducer, merge(INITIAL_STATE, input))
-}
+  }, input || INITIAL_STATE)
