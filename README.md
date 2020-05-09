@@ -1,6 +1,6 @@
 # 🗂 react-universal-data
 
-[![](https://flat.badgen.net/npm/v/react-universal-data?cache=600)](https://www.npmjs.com/package/react-universal-data) [![](https://flat.badgen.net/bundlephobia/minzip/react-universal-data?cache=600)](https://bundlephobia.com/result?p=react-universal-data) ![](https://flat.badgen.net/travis/exah/react-universal-data?cache=600)
+[![](https://flat.badgen.net/npm/v/react-universal-data?cache=600)](https://www.npmjs.com/package/react-universal-data) [![](https://flat.badgen.net/bundlephobia/minzip/react-universal-data?cache=600)](https://bundlephobia.com/result?p=react-universal-data) ![](https://flat.badgen.net/travis/exah/react-universal-data?cache=600) ![](https://flat.badgen.net/coveralls/c/github/exah/react-universal-data)
 
 #### Easy to use hook for getting data on client and server side with effortless hydration of state
 
@@ -8,6 +8,7 @@
 - [x] Simple hooks API
 - [x] TypeScript
 - [x] Can handle updates
+- [x] Simple cache
 - [x] [Suspense](http://reactjs.org/docs/concurrent-mode-suspense.html) on server side via [`react-ssr-prepass`](https://github.com/FormidableLabs/react-ssr-prepass) 💕
 
 > _This is a NO BULLSHIT hook: just PLUG IT in your components, get ALL THE DATA you need (and some more) both CLIENT- and SERVER-side, HYDRATE that ~~bastard~~ app while SSRing like it's NO BIG DEAL, effortlessly PASS IT to the client and render THE SHIT out of it_
@@ -33,13 +34,15 @@ Requests data and preserves the result to the state.
 ```ts
 type useFetchData<T> = (
   // async function that can return any type of data
-  fetcher: (id: string, context: { isServer: boolean }) => Promise<T>,
-  // unique id that will be used for storing & hydrating data while SSR
-  id: string
+  fetcher: (key: string, context: { isServer: boolean }) => Promise<T>,
+  // unique key that will be used for storing & hydrating data while SSR
+  key: string,
+  // use cached value for specified duration of time, by default it will be requested each time
+  ttl?: number
 ) => AsyncState<T>
 ```
 
-> ⚠️ The `id` must be unique for the whole application.
+> ⚠️ The `key` must be unique for the whole application.
 
 Returned object can be in 4 different forms – depending on the promise's state.
 

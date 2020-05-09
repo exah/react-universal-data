@@ -1,50 +1,40 @@
-import { useReducer, useMemo } from 'react'
+import { useReducer } from 'react'
 import { AsyncState } from './types'
-import { ActionTypes, INITIAL_STATE, FINISH_STATE } from './constants'
+
+export const enum ActionTypes {
+  START,
+  FINISH,
+}
+
+const INITIAL_STATE: AsyncState<undefined> = {
+  isReady: false,
+  isLoading: false,
+  error: null,
+  result: undefined,
+}
 
 type Action<T> =
   | { type: ActionTypes.START }
-  | { type: ActionTypes.FINISH; payload: T | Error }
-
-type Reducer<T> = (prevState: AsyncState<T>, action: Action<T>) => AsyncState<T>
+  | { type: ActionTypes.FINISH; result: T | Error }
 
 const merge = <A, B>(a: A, b: B) => Object.assign({}, a, b)
 
-const reducer: Reducer<any> = (prevState, action) => {
-  switch (action.type) {
-    case ActionTypes.START: {
-      return merge(prevState, { isLoading: true, error: null })
-    }
-    case ActionTypes.FINISH: {
-      if (action.payload instanceof Error) {
-        return merge(FINISH_STATE, { isReady: false, error: action.payload })
-      }
-
-      return merge(FINISH_STATE, { result: action.payload })
-    }
-    default: {
-      throw new Error('Unknown action type')
-    }
+export const finished = <T>(next: T | Error, prev?: T): AsyncState<T> => {
+  if (next instanceof Error) {
+    return merge(INITIAL_STATE, { isReady: false, error: next, result: prev })
   }
+
+  return merge(INITIAL_STATE, { isReady: true, result: next })
 }
 
-export function useAsyncState<T>(input: AsyncState<T>) {
-  const [state, dispatch] = useReducer<Reducer<T>>(
-    reducer,
-    merge(INITIAL_STATE, input)
-  )
-
-  const actions = useMemo(() => {
-    const start = () => {
-      dispatch({ type: ActionTypes.START })
+export const useAsyncState = <T>(input?: AsyncState<T>) =>
+  useReducer((state: AsyncState<T>, action: Action<T>): AsyncState<T> => {
+    switch (action.type) {
+      case ActionTypes.START: {
+        return merge(state, { isLoading: true, error: null })
+      }
+      case ActionTypes.FINISH: {
+        return finished(action.result, state.result)
+      }
     }
-
-    const finish = (payload: T) => {
-      dispatch({ type: ActionTypes.FINISH, payload })
-    }
-
-    return { start, finish }
-  }, [dispatch])
-
-  return [state, actions] as const
-}
+  }, input || INITIAL_STATE)

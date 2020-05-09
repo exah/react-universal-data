@@ -1,5 +1,12 @@
 language: node_js
 node_js:
   - 'lts/*'
+
 before_install:
   - npm install -g yarn
+
+jobs:
+  include:
+    - stage: Produce Coverage
+      node_js: lts/*
+      script: yarn coverage
