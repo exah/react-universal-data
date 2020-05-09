@@ -3,7 +3,7 @@ import { DataContext } from './context'
 import { AsyncState, Key, Fetcher } from './types'
 import { ActionTypes, useAsyncState, finished } from './use-async-state'
 
-const used = new Map()
+export const used = new Map()
 
 /**
  * Requests data and preserves the result to the state.

@@ -92,3 +92,57 @@ test('should able to provide custom store', async () => {
   expect(store.get('A')).toBe('Foo')
   expect(getByTestId('response')).toHaveTextContent('Foo')
 })
+
+test('should not request data if it still fresh', async () => {
+  const ttl = 1000
+  const resourceA = jest.fn(() => 'Foo')
+  const resourceB = jest.fn(() => 'Bar')
+  const timers = jest.useFakeTimers()
+
+  function A() {
+    useFetchData(resourceA, 'A', ttl)
+    return null
+  }
+
+  function B() {
+    useFetchData(resourceB, 'B')
+    return <A />
+  }
+
+  const p1 = getInitialData(<B />)
+
+  expect(defaultStore.get('A')).toBe(undefined)
+  expect(defaultStore.get('B')).toBe(undefined)
+
+  await p1
+
+  expect(resourceA).toHaveBeenCalledTimes(1)
+  expect(resourceB).toHaveBeenCalledTimes(1)
+
+  expect(defaultStore.get('A')).toBe('Foo')
+  expect(defaultStore.get('B')).toBe('Bar')
+
+  timers.advanceTimersByTime(ttl / 2)
+
+  const p2 = getInitialData(<B />)
+
+  expect(defaultStore.get('A')).toBe('Foo')
+  expect(defaultStore.get('B')).toBe(undefined)
+
+  await p2
+
+  expect(defaultStore.get('A')).toBe('Foo')
+  expect(defaultStore.get('B')).toBe('Bar')
+  expect(resourceA).toHaveBeenCalledTimes(1)
+
+  timers.advanceTimersByTime(ttl / 2)
+
+  const p3 = getInitialData(<B />)
+
+  expect(defaultStore.get('A')).toBe(undefined)
+  expect(defaultStore.get('B')).toBe(undefined)
+
+  await p3
+
+  expect(resourceA).toHaveBeenCalledTimes(2)
+})
