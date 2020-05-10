@@ -1,9 +1,9 @@
-import { useRef, useContext, useLayoutEffect } from 'react'
+import { useContext, useLayoutEffect } from 'react'
 import { DataContext } from './context'
 import { AsyncState, Key, Fetcher } from './types'
 import { ActionTypes, useAsyncState } from './use-async-state'
 
-export const used = new Map()
+export const used = new Set()
 
 /**
  * Requests data and preserves the result to the state.
@@ -18,17 +18,24 @@ export function useFetchData<T = any>(
   ttl?: number
 ): AsyncState<T> {
   const store = useContext(DataContext)
-  const initRef = useRef(store.get(key))
-  const [state, dispatch] = useAsyncState<T>(initRef.current)
+  const [state, dispatch] = useAsyncState<T>(store.get(key))
 
   useLayoutEffect(() => {
-    let isCancelled = false
+    if (store.has(key)) {
+      dispatch({ type: ActionTypes.FINISH, result: store.get(key) })
 
-    function cleanup() {
-      isCancelled = true
-      used.set(key, true)
+      if (ttl) {
+        if (!store.hasTTL(key)) store.setTTL(key, ttl)
+        return
+      }
+
+      if (!used.has(key)) {
+        used.add(key)
+        return
+      }
     }
 
+    let isCancelled = false
     function finish(result: T) {
       if (isCancelled) return
 
@@ -40,25 +47,15 @@ export function useFetchData<T = any>(
       }
     }
 
-    if ((ttl || !used.has(key)) && store.has(key)) {
-      if (!store.hasTTL(key)) {
-        store.setTTL(key, ttl)
-      }
-
-      if (initRef.current !== store.get(key)) {
-        dispatch({ type: ActionTypes.FINISH, result: store.get(key) })
-      }
-
-      return cleanup
-    }
-
     dispatch({ type: ActionTypes.START })
 
     Promise.resolve()
       .then(() => fetcher(key, { isServer: false }))
       .then(finish, finish)
 
-    return cleanup
+    return () => {
+      isCancelled = true
+    }
   }, [store, key, ttl, dispatch, fetcher])
 
   return state

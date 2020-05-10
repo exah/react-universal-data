@@ -35,7 +35,12 @@ export const useAsyncState = <T>(input?: T) =>
           return merge(state, { isLoading: true, error: null })
         }
         case ActionTypes.FINISH: {
-          return init(action.result, state.result)
+          const shouldBailOut =
+            state.isReady &&
+            !state.isLoading &&
+            Object.is(state.result, action.result)
+
+          return shouldBailOut ? state : init(action.result, state.result)
         }
       }
     },
